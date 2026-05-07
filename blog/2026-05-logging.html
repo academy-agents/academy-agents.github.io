@@ -144,6 +144,23 @@ things afterwards.
 across multiple Python processes, and just for a relevant time period: for example, the lifetime of an agent inside
 a worker.</p>
 
+<p>This is driven through an Academy-specific <code>LogConfig</code> abstract class, which is designed to carry the
+relevant configuration for a particular kind of logging around.</p>
+
+<h3>Adding interesting <code>extra</code> info</h3>
+
+<p>Everywhere something interesting happens in the Academy core code, something that might be interesting to an
+observability handler, the codebase needs to have a log call, ideally with lots of juicy information in the extra
+field. I've already added some of these: for example, agent identities, and when actions are invoked, a identifier
+to help tie together information about the action on the submit side, in the exchange and on the agent side.
+</p>
+
+<h3>A JSON based example</h3>
+
+<p>Here's something that is easier to do now that was hard to do before: look at the timings and message
+flows of agent interactions on both the submit side and agent side.
+</p>
+
 </div>
 </section>
 
