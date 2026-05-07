@@ -159,6 +159,10 @@ nav {
     z-index: 2;
 }
 
+.hero a {
+    color: #ffffff;
+}
+
 .cta-button {
     display: inline-block;
     background: linear-gradient(135deg, #7877c6 0%, #ff77c6 100%);
@@ -273,6 +277,9 @@ nav {
     font-weight: 400;
 }
 
+.feature-card a {
+    color: #ffffff;
+}
 /* Architecture Section */
 .architecture {
     background: linear-gradient(135deg, #0a0a0f 0%, #141420 100%);
