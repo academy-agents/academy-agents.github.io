@@ -110,13 +110,13 @@ our users performing furtive, guilty regular expressions on log files to extract
 incredibly fragile way of doing things, and kinda sad - you can see that the variable x already exists as a separate value
 </p>
 
-<p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:
+<p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:</p>
 
 <pre>
 logger.debug("x = %s", x, extra={"x": x})
 </pre>
 
-and that <code>extra</code> dictionary will flow into the logging system, although in many cases then be ignored.</p>
+<p>and that <code>extra</code> dictionary will flow into the logging system, although in many cases then be ignored.</p>
 
 <h3>Interesting log handlers</h3>
 
