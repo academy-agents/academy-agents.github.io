@@ -341,7 +341,7 @@ nav {
 
 /* Use Cases Section */
 .use-cases {
-    background: #f8f9fa;
+    background: #08090a;
     padding: 80px 0;
 }
 
@@ -352,7 +352,7 @@ nav {
 }
 
 .use-case-card {
-    background: white;
+    background: #18191a;
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
