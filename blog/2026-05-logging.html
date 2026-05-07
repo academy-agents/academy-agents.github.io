@@ -3,6 +3,14 @@
 <title>Academy's Road Map for Observability</title>
 <link rel="stylesheet" href="../site.css">
 
+
+<!-- the following URLs bring in syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
+<script>hljs.highlightAll();</script>
+<!-- end of syntax highlighting imports -->
+
 </head>
 <body>
 
@@ -90,14 +98,14 @@ Python already has such a system: the <code>logging</code> framework!</p>
 
 <p>Lots of people have encountered Python logging before, and it usually looks something like this:</p>
 
-<pre>
+<pre><code>
 import logging
 
 logger = logging.getLogger(__name__)  # get a per-module logger
 
 logger.info("Starting")
 logger.debug("x = %s", x)
-</pre>
+</code></pre>
 
 <p>Get a logger object, which knows how to inject log records into the logging system, and which has a hierarchical name
 usually based on the Python module structure.</p>
@@ -112,9 +120,9 @@ incredibly fragile way of doing things, and kinda sad - you can see that the var
 
 <p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:</p>
 
-<pre>
+<pre><code>
 logger.debug("x = %s", x, extra={"x": x})
-</pre>
+</code></pre>
 
 <p>and that <code>extra</code> dictionary will flow into the logging system, although in many cases then be ignored.</p>
 
