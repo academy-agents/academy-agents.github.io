@@ -1,18 +1,150 @@
 <html>
 <head>
-<title>Academy's road map for distributed logging and provenance</title>
+<title>Academy's Road Map for Observability</title>
 <link rel="stylesheet" href="../site.css">
 
 </head>
 <body>
-<h1 class="section-title">Academy's road map for distributed logging and provenance</h1>
 
-<p>lorem ipsum
+    <section class="getting-started" id="getting-started">
+        <div class="container">
 
+
+<h1 class="section-title">Academy's road map for Observability</h1>
+<p>Ben Clifford, May 2026</p>
+
+<h3>Introduction</h3>
+
+<p>This post carries on from a presentation I gave at Academy's fortnightly community call
+in February 2026. <a href="academy-observability-2026-02.pdf">I put the slides for that
+presentation online</a>.
+
+<p>We've learned a few hard lessons about observability over the years working on execution systems
+including <a href="https://parsl-project.org/">Parsl</a> and <a href="https://www.globus.org/compute">Globus Compute</a>.
 </p>
 
-<p>
-et cetera
+<p>One is that developers of task execution systems try to hide the guts of their system from users,
+because the task execution should be doing all the hard work. That leads to trouble when those users
+graduate from "hello world" users to power users who are both capable of understanding complex systems,
+and who actively want to understand those systems as they debug what they have built.
 </p>
+
+<p>I've encountered that in source code (this source code isn't for you to read) and in observability:
+by which I mean a broad space of wanting to know what is happening inside a running system, and which
+overlaps other keywords such as: monitoring, provenance, log files, distributed tracing, performance metrics,
+and outage detection.
+</p>
+
+<p>I've recently merged some pull requests in this area, and I want to describe my approach here.</p>
+
+<h3>Other observability projects</h3>
+
+<p>There are many projects that want to do observability-related stuff. I don't want to trivialize that
+work or claim to be able to easily reinvent the work of an entire research project/product. Instead I want
+Academy users to be able to make use of both the good stuff Academy brings and the good stuff other projects
+bring.</p>
+
+<p>A couple of interesting examples that I've personally engaged with:
+
+<ul>
+<li><a href="https://diaspora-project.github.io/">Diaspora</a>
+which looks like it could be useful for gathering log-style information across a 
+distributed "academy" of agents and clients (providing a single place for further
+work on analysis of that data)
+</li>
+
+<li><a href="https://github.com/ORNL/flowcept">Flowcept</a> - a distributed workflow
+provenance system, which we have already prototyped an integration with here:
+<a href="https://github.com/academy-agents/academy-flowcept">https://github.com/academy-agents/academy-flowcept</a>
+</li>
+</p>
+
+<p>As well as these, I expect other observability related projects and ideas to ebb and flow, and I expect
+some projects which don't regard themselves as observability projects to also want to engage - for example, in
+the Parsl world I have occasionally encountered wrapping workflow managers which were interested in fine
+grained information.</p>
+
+<p>I'm also very aware of competing and differing priorities: someone might want to be building something
+very research-oriented for a PhD, while someone else might be building a more boring but more stable system.
+Both ends of this spectrum are legitimate and I don't want to exclude either. But they are different, and 
+there's no universal winner here.</p>
+
+<h3>Changes to Academy core</h3>
+
+<p>I wanted to implement a fairly minimal set of hooks, based around the ideas that:
+<ul>
+<li>the core Academy code knows what it has done/is about to do (think: where we put log statements in the
+source code</li>
+<li>the core Academy code does not (and should not) know who/what will do something with that information</li>
+</p>
+
+<p>This led me to think about a fairly conventional plugin hook system, and then the realisation that
+Python already has such a system: the <code>logging</code> framework!</p>
+
+<p>You can read the Python side of the story in <a href="https://docs.python.org/3/library/logging.html">Logging Facility for Python</a> in the Python Standard Library documentation.</p>
+
+<p>From the Academy side of things I care about two pieces of <code>logging</code>, mirroring the bullet points above: creating log records with structured information, and plugging in handlers to do interesting stuff with those log records.</p>
+</p>
+
+<h3>Creating machine readable log records</h3>
+
+<p>Lots of people have encountered Python logging before, and it usually looks something like this:</p>
+
+<pre>
+import logging
+
+logger = logging.getLogger(__name__)  # get a per-module logger
+
+logger.info("Starting")
+logger.debug("x = %s", x)
+</pre>
+
+<p>Get a logger object, which knows how to inject log records into the logging system, and which has a hierarchical name
+usually based on the Python module structure.</p>
+
+<p>Then write out two log entries, at different levels: one at INFO level and one at DEBUG.</p>
+
+<p>The debug entry happens to include a variable value - this is incorporated into the human readable log string, which is great
+if your log entries are going into a traditional log file for a human to look at manually. But that leads inevitably to
+our users performing furtive, guilty regular expressions on log files to extract variables like this. This is an
+incredibly fragile way of doing things, and kinda sad - you can see that the variable x already exists as a separate value
+</p>
+
+<p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:
+
+<pre>
+logger.debug("x = %s", x, extra={"x": x})
+</pre>
+
+and that <code>extra</code> dictionary will flow into the logging system, although in many cases then be ignored.</p>
+
+<h3>Interesting log handlers</h3>
+
+<p>Sending a log record into the logging system doesn't write it out or store it anywhere. That's the job of an
+orthogonal piece of the logger library: log handlers.</p>
+
+<p>A handler is an object that gets a callback whenever a log record is logged by one of those logger.info or logger.debug calls I mentioned above.</p>
+
+<p>It is deliberately undefined what it should do with that record: more traditional handlers do things like write to the
+console or to a log file (and Academy has support those output modes for a long time), but I also added another handler
+which writes out each record as a JSON object including the <code>extra</code> keys - which makes things much easier for
+machine processing. And the flowcept plugin also interfaces as a log handler, looking for records with relevant
+<code>extra</code> info.</p>
+
+<h3>Configuring log handlers</h3>
+
+<p>Log handlers are configured per-process. It's very easy to configure them for your submit side process, where you
+are providing the main module and can initialize anything you want. But in other environments, your code might be
+running inside some other framework: for example an academy agent might be running via Globus Compute inside a Parsl
+worker running on an HPC node, and that Parsl worker might also have done other things before and will do even more
+things afterwards.
+</p>
+
+<p>So the next piece I implemented was a configuration mechanism intended to help users configure the same log handler
+across multiple Python processes, and just for a relevant time period: for example, the lifetime of an agent inside
+a worker.</p>
+
+</div>
+</section>
 
 </body>
