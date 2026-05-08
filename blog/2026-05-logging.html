@@ -86,6 +86,8 @@ source code</li>
 <li>the core Academy code does not (and should not) know who/what will do something with that information</li>
 </p>
 
+<p>I specifically did not want to implement an overall user-facing observability system.</p>
+
 <p>This led me to think about a fairly conventional plugin hook system, and then the realisation that
 Python already has such a system: the <code>logging</code> framework!</p>
 
