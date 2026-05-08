@@ -5,7 +5,7 @@
 
 
 <!-- the following URLs bring in syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
 <script>hljs.highlightAll();</script>
@@ -96,10 +96,9 @@ Python already has such a system: the <code>logging</code> framework!</p>
 
 <p>Lots of people have encountered Python logging before, and it usually looks something like this:</p>
 
-<pre><code>
-import logging
+<pre><code>import logging
 
-logger = logging.getLogger(__name__)  # get a per-module logger
+logger = logging.getLogger(__name__)
 
 logger.info("Starting")
 logger.debug("x = %s", x)
@@ -118,8 +117,7 @@ incredibly fragile way of doing things, and kinda sad - you can see that the var
 
 <p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:</p>
 
-<pre><code>
-logger.debug("x = %s", x, extra={"x": x})
+<pre><code>logger.debug("x = %s", x, extra={"x": x})
 </code></pre>
 
 <p>and that <code>extra</code> dictionary will flow into the logging system, although in many cases then be ignored.</p>
