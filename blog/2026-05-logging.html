@@ -54,17 +54,15 @@ bring.</p>
 
 <p>A couple of interesting examples that I've personally engaged with:
 
-<ul>
-<li><a href="https://diaspora-project.github.io/">Diaspora</a>
+<p><a href="https://diaspora-project.github.io/">Diaspora</a>
 which looks like it could be useful for gathering log-style information across a 
 distributed "academy" of agents and clients (providing a single place for further
 work on analysis of that data)
-</li>
+</p>
 
-<li><a href="https://github.com/ORNL/flowcept">Flowcept</a> - a distributed workflow
+<p><a href="https://github.com/ORNL/flowcept">Flowcept</a> - a distributed workflow
 provenance system, which we have already prototyped an integration with here:
 <a href="https://github.com/academy-agents/academy-flowcept">https://github.com/academy-agents/academy-flowcept</a>
-</li>
 </p>
 
 <p>As well as these, I expect other observability related projects and ideas to ebb and flow, and I expect
@@ -80,10 +78,9 @@ there's no universal winner here.</p>
 <h3>Changes to Academy core</h3>
 
 <p>I wanted to implement a fairly minimal set of hooks, based around the ideas that:
-<ul>
-<li>the core Academy code knows what it has done/is about to do (think: where we put log statements in the
-source code</li>
-<li>the core Academy code does not (and should not) know who/what will do something with that information</li>
+<p>the core Academy code knows what it has done/is about to do (think: where we put log statements in the
+source code</p>
+<p>the core Academy code does not (and should not) know who/what will do something with that information
 </p>
 
 <p>I specifically did not want to implement an overall user-facing observability system.</p>
