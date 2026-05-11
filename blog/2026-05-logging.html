@@ -107,11 +107,11 @@ logger.debug("x = %s", x)
 <p>Get a logger object, which knows how to inject log records into the logging system, and which has a hierarchical name
 usually based on the Python module structure.</p>
 
-<p>Then write out two log entries, at different levels: one at INFO level and one at DEBUG.</p>
+<p>Then make two log entries, at different levels: one at INFO level and one at DEBUG.</p>
 
 <p>The debug entry happens to include a variable value - this is incorporated into the human readable log string, which is great
-if your log entries are going into a traditional log file for a human to look at manually. But that leads inevitably to
-our users performing furtive, guilty regular expressions on log files to extract variables like this. This is an
+if your log entries are for a human to look at manually. But that leads inevitably to
+users performing furtive, guilty regular expressions on log files to extract variables like this. This is an
 incredibly fragile way of doing things, and kinda sad - you can see that the variable x already exists as a separate value
 </p>
 
@@ -127,42 +127,159 @@ incredibly fragile way of doing things, and kinda sad - you can see that the var
 <p>Sending a log record into the logging system doesn't write it out or store it anywhere. That's the job of an
 orthogonal piece of the logger library: log handlers.</p>
 
-<p>A handler is an object that gets a callback whenever a log record is logged by one of those logger.info or logger.debug calls I mentioned above.</p>
+<p>A handler is an object that gets to know whenever a log record is logged by one of those <code>logger.info</code> or <code>logger.debug</code> calls I mentioned above.</p>
 
 <p>It is deliberately undefined what it should do with that record: more traditional handlers do things like write to the
-console or to a log file (and Academy has support those output modes for a long time), but I also added another handler
+console or to a log file (and Academy has supported those output modes for a long time), but I also added another handler
 which writes out each record as a JSON object including the <code>extra</code> keys - which makes things much easier for
-machine processing. And the flowcept plugin also interfaces as a log handler, looking for records with relevant
+machine processing. And the Flowcept plugin also interfaces as a log handler, looking for records with relevant
 <code>extra</code> info.</p>
 
 <h3>Configuring log handlers</h3>
 
-<p>Log handlers are configured per-process. It's very easy to configure them for your submit side process, where you
-are providing the main module and can initialize anything you want. But in other environments, your code might be
-running inside some other framework: for example an academy agent might be running via Globus Compute inside a Parsl
-worker running on an HPC node, and that Parsl worker might also have done other things before and will do even more
-things afterwards.
+<p>In plain Python, log handlers are configured per-process. It's very easy to configure them for your submit side process, where you
+are providing the main module and can initialize anything you want. But in Academy, some of your code might be
+running elsewhere and inside some other framework: for example an Academy agent might be running via Globus Compute
+inside a Parsl worker process running on an HPC node, and that Parsl worker process might also have run things before and will run even more things after.
 </p>
 
-<p>So the next piece I implemented was a configuration mechanism intended to help users configure the same log handler
-across multiple Python processes, and just for a relevant time period: for example, the lifetime of an agent inside
+<p>So the next piece I implemented was a configuration mechanism to help users configure the same log handler
+across multiple Python processes, and for a relevant time period: for example, the lifetime of an agent inside
 a worker.</p>
 
 <p>This is driven through an Academy-specific <code>LogConfig</code> abstract class, which is designed to carry the
-relevant configuration for a particular kind of logging around.</p>
+configuration for a particular kind of Python log handler around between different processes.</p>
 
 <h3>Adding interesting <code>extra</code> info</h3>
 
 <p>Everywhere something interesting happens in the Academy core code, something that might be interesting to an
-observability handler, the codebase needs to have a log call, ideally with lots of juicy information in the extra
-field. I've already added some of these: for example, agent identities, and when actions are invoked, a identifier
-to help tie together information about the action on the submit side, in the exchange and on the agent side.
+observability handler, the codebase needs to have a log call, ideally with lots of juicy information in the <code>extra</code>
+dictionary. We've already added some of these: for example, agent identities, and when actions are invoked, a identifier
+to help tie together information about the action on the submit side, in the exchange and on the agent side. I expect that
+information to get richer as we discover more things we want to know (and you should open an issue or a pull request if
+you see something interesting to record).
 </p>
 
 <h3>A JSON based example</h3>
 
 <p>Here's something that is easier to do now that was hard to do before: look at the timings and message
 flows of agent interactions on both the submit side and agent side.
+</p>
+
+<p>I'll only sketch new features in the code here, not give full executable examples.
+</p>
+
+<p>First run an agentic workflow (a submit side and some agents) with logs flowing into files in JSON format:</p>
+
+<pre><code>async with await Manager.from_exchange_factory(...,
+    log_config=JSONPoolLogging(),
+    ) as manager:
+        # run your agents and talk to them
+</code></pre>
+
+<p>This workflow will run with the JSON pool handler configured both in the submit process and also wherever your
+agents run. JSON pool logging will put all of your log files into a directory under <code>~/local/share/academy/logs</code>.
+Each separate process will get its own file. If your agent ran somewhere with a different home file system, you can
+copy the JSON log files into one place using your favourite file transfer tool.
+</p>
+
+<p>With all the records in JSON format, you can process them in different ways: I often load them into a Python process, I've also tried putting them into an SQLite database, but here I'll use <code>jq</code> from the command line:
+</p>
+
+<pre><code>$ cd ~/local/share/academy/logs/da7d98d6-5196-4aec-adf1-91d4c1878393/
+$ ls
+2a158e17-b35f-49ec-9b30-5101924390a4.jsonlog
+44d9d9da-0f64-4b92-946b-9258f80f3f8d.jsonlog
+</code></pre>
+
+<p>Here's an example of querying which Python modules have anything: there are academy modules, but also other modules that also use Python's logging system - support libraries such as <code>asyncio</code> and agent code which in my test case lives in a module called <code>fibiterate7</code>.
+</p>
+
+<pre><code>$ jq -s '[.[].name] | unique' *.jsonlog
+[
+  "__main__",
+  "academy.exchange.client",
+  "academy.exchange.cloud.client",
+  "academy.handle",
+  "academy.logging.configs.jsonpool",
+  "academy.manager",
+  "academy.runtime",
+  "asyncio",
+  "fibiterate7lib",
+  "parsl.dataflow.dflow",
+  "parsl.dataflow.memoization",
+  "parsl.executors.base",
+  "parsl.executors.high_throughput.executor",
+  "parsl.executors.high_throughput.zmq_pipes",
+  "parsl.executors.status_handling",
+  "parsl.executors.threads",
+  "parsl.jobs.job_status_poller",
+  "parsl.jobs.strategy",
+  "parsl.monitoring.monitoring",
+  "parsl.multiprocessing",
+  "parsl.process_loggers",
+  "parsl.providers.local.local",
+  "parsl.usage_tracking.usage",
+  "parsl.utils"
+]
+</code></pre>
+
+<p>Here's an example tracking one particular message flow across both log files using a message ID that I extracted by hand, sorted by log timestamp (which Python calls <code>created</code>), showing the process (4472 is my submit side, 4521 is where the agent was running) and the human readable message.
+</p>
+
+<pre><code>$ jq -s 'sort_by(.created) | 
+  .[] |
+  select(."academy.action_tag"=="8e28bb12-e5cc-46c7-8298-7d466eff4098") |
+  {process,created,message}'
+  *.jsonlog
+{
+  "process": "4472",
+  "created": "1778498011.6303687",
+  "message": "Invoking action __anext__ with tag
+             id 8e28bb12-e5cc-46c7-8298-7d466eff4098"
+}
+{
+  "process": "4472",
+  "created": "1778498011.6309419",
+  "message": "Sending action request from UserId<a8c24f7c>
+             to AgentId<7cc2f0a6> (action='__anext__')"
+}
+{
+  "process": "4472",
+  "created": "1778498011.635122",
+  "message": "Waiting for result of action __anext__ with
+             tag id 8e28bb12-e5cc-46c7-8298-7d466eff4098"
+}
+{
+  "process": "4521",
+  "created": "1778498011.6369267",
+  "message": "Invoking action __anext__ with invocation id
+             8e28bb12-e5cc-46c7-8298-7d466eff4098"
+}
+{
+  "process": "4521",
+  "created": "1778498012.1386456",
+  "message": "Completed action __anext__ with invocation id
+             8e28bb12-e5cc-46c7-8298-7d466eff4098"
+}
+{
+  "process": "4472",
+  "created": "1778498012.1435366",
+  "message": "Successfully completed action __anext__ with
+             tag id 8e28bb12-e5cc-46c7-8298-7d466eff4098"
+}
+
+
+</code></pre>
+
+
+
+<h3>What you can do</h3>
+
+<p>Right now you can choose how your logs are delivered: to the console, to traditional log files, or in JSON format. I hope the latter encourages you away from the path of regexping-your-logs.
+</p>
+
+<p>If you're interested in building and experimenting, a couple of interesting paths forward for me are: more interesting ways to move and store logging records (for example, Diaspora and Flowcept), and more interesting ways to present that information (are you interesting in performance visualization? in analysing how results came to be?).
 </p>
 
 </section>
