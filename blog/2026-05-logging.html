@@ -89,10 +89,10 @@ Python already has such a system: the <code>logging</code> framework!</p>
 
 <p>You can read the Python side of the story in <a href="https://docs.python.org/3/library/logging.html">Logging Facility for Python</a> in the Python Standard Library documentation.</p>
 
-<p>From the Academy side of things I care about two pieces of <code>logging</code>, mirroring the bullet points above: creating log records with structured information, and plugging in handlers to do interesting stuff with those log records.</p>
+<p>From the Academy side of things I care about two pieces of <code>logging</code>, mirroring the bullet points above: creating log events with structured information, and plugging in handlers to do interesting stuff with those log events.</p>
 </p>
 
-<h3>Creating machine readable log records</h3>
+<h3>Creating machine readable log events</h3>
 
 <p>Lots of people have encountered Python logging before, and it usually looks something like this:</p>
 
@@ -104,7 +104,7 @@ logger.info("Starting")
 logger.debug("x = %s", x)
 </code></pre>
 
-<p>Get a logger object, which knows how to inject log records into the logging system, and which has a hierarchical name
+<p>Get a logger object, which knows how to inject log events into the logging system, and which has a hierarchical name
 usually based on the Python module structure.</p>
 
 <p>Then make two log entries, at different levels: one at INFO level and one at DEBUG.</p>
@@ -115,7 +115,7 @@ users performing furtive, guilty regular expressions on log files to extract var
 incredibly fragile way of doing things, and kinda sad - you can see that the variable x already exists as a separate value
 </p>
 
-<p>It turns out Python already has a mechanism for attaching key/value pairs to log records. You can write something like:</p>
+<p>It turns out Python already has a mechanism for attaching key/value pairs to log events. You can write something like:</p>
 
 <pre><code>logger.debug("x = %s", x, extra={"x": x})
 </code></pre>
@@ -124,15 +124,15 @@ incredibly fragile way of doing things, and kinda sad - you can see that the var
 
 <h3>Interesting log handlers</h3>
 
-<p>Sending a log record into the logging system doesn't write it out or store it anywhere. That's the job of an
+<p>Sending a log event into the logging system doesn't write it out or store it anywhere. That's the job of an
 orthogonal piece of the logger library: log handlers.</p>
 
-<p>A handler is an object that gets to know whenever a log record is logged by one of those <code>logger.info</code> or <code>logger.debug</code> calls I mentioned above.</p>
+<p>A handler is an object that gets to know whenever a log event is logged by one of those <code>logger.info</code> or <code>logger.debug</code> calls I mentioned above.</p>
 
-<p>It is deliberately undefined what it should do with that record: more traditional handlers do things like write to the
+<p>It is deliberately undefined what it should do with that event: more traditional handlers do things like write to the
 console or to a log file (and Academy has supported those output modes for a long time), but I also added another handler
-which writes out each record as a JSON object including the <code>extra</code> keys - which makes things much easier for
-machine processing. And the Flowcept plugin also interfaces as a log handler, looking for records with relevant
+which writes out each event as a JSON object including the <code>extra</code> keys - which makes things much easier for
+machine processing. And the Flowcept plugin also interfaces as a log handler, looking for events with relevant
 <code>extra</code> info.</p>
 
 <h3>Configuring log handlers</h3>
@@ -183,7 +183,7 @@ Each separate process will get its own file. If your agent ran somewhere with a 
 copy the JSON log files into one place using your favourite file transfer tool.
 </p>
 
-<p>With all the records in JSON format, you can process them in different ways: I often load them into a Python process, I've also tried putting them into an SQLite database, but here I'll use <code>jq</code> from the command line:
+<p>With all the events in JSON format, you can process them in different ways: I often load them into a Python process, I've also tried putting them into an SQLite database, but here I'll use <code>jq</code> from the command line:
 </p>
 
 <pre><code>$ cd ~/local/share/academy/logs/da7d98d6-5196-4aec-adf1-91d4c1878393/
@@ -279,7 +279,7 @@ $ ls
 <p>Right now you can choose how your logs are delivered: to the console, to traditional log files, or in JSON format. I hope the latter encourages you away from the path of regexping-your-logs.
 </p>
 
-<p>If you're interested in building and experimenting, a couple of interesting paths forward for me are: more interesting ways to move and store logging records (for example, Diaspora and Flowcept), and more interesting ways to present that information (are you interesting in performance visualization? in analysing how results came to be?).
+<p>If you're interested in building and experimenting, a couple of interesting paths forward for me are: more interesting ways to move and store logging events (for example, Diaspora and Flowcept), and more interesting ways to present that information (are you interesting in performance visualization? in analysing how results came to be?).
 </p>
 
 </section>
