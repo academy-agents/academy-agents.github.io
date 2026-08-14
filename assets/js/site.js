@@ -151,9 +151,17 @@
      The "where agents live" diagram. Everything the figure means is already in
      the markup — four identical entities, the Academy agent inside each one,
      all five instrument bubbles with their tethers drawn, the whole wire
-     network, and four mailboxes with their flags down — so this file adds no
-     content at all. It does exactly one thing: it lets the motion run only
-     while the figure is on screen.
+     network, and four mailboxes each with a flag and a tray of four sockets
+     for the messages waiting in it — so this file adds no content at all. It
+     does exactly one thing: it lets the motion run only while the figure is on
+     screen.
+
+     Note that reduced motion is NOT the same as scripting off. With scripting
+     off the figure sits at its base styles: an idle exchange, every tray
+     empty. Under prefers-reduced-motion, CSS section 18 additionally pins the
+     message layer to a chosen frame — the cloud's queue at three with its flag
+     up and its agent reasoning — because that state is the content and a still
+     frame can carry it.
 
      It injects no control. The pause button was removed at the client's
      request; motion still stops entirely for anyone with

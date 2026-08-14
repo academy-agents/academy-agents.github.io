@@ -715,7 +715,10 @@ main { flex: 1 0 auto; }
    wide, which dominated the section it is meant to support. */
 .arch-figure {
   max-width: 820px;
-  margin: 0 auto 3rem;
+  /* Top margin matches .vision's, for the same reason: the heading that used
+     to sit above this figure was removed, and it had been carrying all of the
+     separation from the section lead. */
+  margin: 2.25rem auto 3rem;
 }
 
 /* Drawn on white; give it a light card in both themes rather than inverting,
@@ -745,10 +748,28 @@ main { flex: 1 0 auto; }
   align-items: start;
 }
 
-.arch-split__text p { color: var(--text-muted); }
-.arch-split__text p + p { margin-top: 0.9rem; }
-.arch-split__text strong { color: var(--text); font-weight: 640; }
 .arch-split__map dt strong { color: var(--text); }
+
+/* The .arch-split__text rules that used to sit here are gone with the column
+   they styled — see the note in the markup for what was cut and why.
+
+   With one child left, the comparison list would otherwise stretch across the
+   whole container. Two things follow. It takes the figure's 820px so the two
+   read as one block, and each row splits term from description: a full-width
+   single column would set the description at roughly 100 characters, where
+   splitting holds it near 70. */
+.arch-split--single {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.arch-split--single .dl-list__row {
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+.arch-split__more { margin-top: 1.25rem; }
 
 /* --------------------------------------------------------------------------
    9b. Vision figure — "where agents live"
@@ -771,7 +792,7 @@ main { flex: 1 0 auto; }
    the figure (the sourcing). Nothing here should grow a narrative column back.
 
    TWO ANIMATIONS, SIMULTANEOUS AND CONTINUOUS. The bubble focus cycle (13s)
-   and the message loop (15s) run at the same time and neither stops:
+   and the message loop (24s) run at the same time and neither stops:
    sequencing them, or running one pass and resting, read as the figure getting
    stuck. The one thing that stops the motion outright is
    prefers-reduced-motion; the other is scrolling the figure off screen. There
@@ -779,29 +800,45 @@ main { flex: 1 0 auto; }
    live WCAG 2.2.2 question and is written up in the handover rather than
    papered over here.
 
+   THE MESSAGE LOOP IS A QUEUE, NOT A RELAY. Messages accumulate in a mailbox
+   and are collected as a batch. Three arrive at the cloud's mailbox and wait
+   there while the cloud agent — the only agent in the figure that reasons — is
+   busy reasoning; it takes all three at once when it finishes, and only then
+   acts. That is the paper's claim for persistent mailboxes ("providing
+   resilience when individual agents may sporadically be online") drawn rather
+   than asserted, and the think halo's window is what gives the queue a cause.
+   The two must stay aligned: separate them and the figure is back to showing
+   arbitrary traffic. The full timetable and the per-mailbox depth step
+   functions are in the motion block at the foot of this section.
+
    REPEATING ONE EVENT AT SEVERAL POINTS OF THE CYCLE. There are three ways to
    do this and only two of them work, so be exact about which is which:
 
      1. Several WINDOWS inside ONE keyframe timeline, on one element, at their
         own percentages of the loop. One animation, several events. Safe under
-        `infinite`, and it is what the mailbox flags use — see
-        wgd-flag-cloud, which raises the cloud's single flag three times.
+        `infinite`, and it is what everything on the cloud mailbox uses — its
+        flag, its flash and each of its pips fires three times off one keyframe.
      2. Several ELEMENTS, one per occurrence, each on the same one-window
-        keyframe at its own delay. Also correct, and it is what .wgd-mflash
-        and .wgd-think still use. It is only safe where the element's resting
-        state is invisible: those two rest at opacity 0, so the copies that
-        are not firing draw nothing.
+        keyframe at its own delay. Only safe where the element's resting state
+        is invisible. Nothing in the message layer relies on it any more: a
+        lowered flag and an unlit pip are both VISIBLE resting states, so a
+        spare copy is a drawn artefact sitting under the live one, not a
+        dormant duplicate. Where several mailboxes share one behaviour the
+        figure now uses one element each on a shared keyframe with its own
+        delay — one element per occurrence per mailbox, never stacked.
      3. Several ANIMATIONS on one element — `animation-name: x, x` with two
         delays. This is the trap. Two infinite animations are BOTH always in
         their active phase, so the later-declared one wins forever and the
         earlier never shows. It worked only while the loop stopped after one
-        pass, and it has bitten this figure once already.
+        pass, and it has bitten this figure once already. Every pip and every
+        flag below carries exactly ONE animation-name.
 
-   The flags were built with (2) and that was the wrong choice for them,
-   because a flag's resting state is VISIBLE — rotate(-90deg), lying along the
-   roof. The cloud mailbox receives three hops, so it carried three flags, and
-   raising one drew the other two, lowered, underneath it. That was the ghost.
-   (1) is the fix, and it removes the stacking rather than hiding it.
+   The flags were once built with (2) and that was the wrong choice, for the
+   reason above: the cloud mailbox received three hops, carried three flag
+   elements, and raising one drew the other two, lowered, underneath it. That
+   was the ghost. The pips would have reproduced it exactly — an unlit socket
+   is as visible as a lowered flag — which is why each pip is one element with
+   every window it needs written into its own keyframe.
 
    Every colour below resolves through a global token, and the tokens are
    already defined three times over (bare :root, the dark media query, and
@@ -816,7 +853,11 @@ main { flex: 1 0 auto; }
    -------------------------------------------------------------------------- */
 
 .vision {
-  margin: 0 auto 3.5rem;
+  /* The top margin used to come from the heading and sourcing clause that sat
+     above the figure. Both were removed — the drawing is self-describing and
+     the problem statement frames it — which left the figure butting directly
+     against the last line of prose with a measured gap of zero. */
+  margin: 2.25rem auto 3.5rem;
 
   /* Local names for the global tokens, so the SVG reads as a palette rather
      than as a list of var() calls. Every pairing was computed against the
@@ -824,25 +865,39 @@ main { flex: 1 0 auto; }
 
        rail, junction beads, mailbox body edge and lowered
          flag, all --border-strong on bg-inset                   3.04 / 3.03 [3]
-       border-strong on bg-subtle (boundary inner half, tether
-         over an entity)                                        3.15 / 3.33 [3]
-       border-strong on bg  (boundary outer half, tethers,
-         wires, bubble rings)                                   3.35 / 3.51 [3]
+       border-strong on bg-subtle (boundary inner AND outer
+         halves, tethers, wires, bubble rings)                  3.15 / 3.33 [3]
        bubble icon at its 0.62 dim, composited on bg-subtle     4.88 / 6.38 [3]
        text-faint on bg-raised   (ACADEMY AGENT part label)     4.94 / 4.76 [4.5]
-       text-faint on bg          (EXCHANGE part label, which
-         sits outside the box and so lands on the page)         5.07 / 5.22 [4.5]
+       text-faint on bg-subtle   (EXCHANGE part label, which
+         sits outside the box and so lands on the page)         4.77 / 4.96 [4.5]
        text-muted on accent-sub  (LLM-driven)                   5.38 / 6.48 [4.5]
        text-muted on bg-inset    (kind text)                    5.60 / 6.42 [4.5]
        text-muted on bg-subtle   (entity reason line)           5.81 / 7.06 [4.5]
        accent on accent-subtle   (LLM band edge and mark)       6.41 / 6.37 [3]
        accent on bg-inset        (letter and raised flag over
-         the bus, mailbox flash)                                6.68 / 6.30 [3]
-       accent on bg-subtle       (letter over an entity, halo)  6.93 / 6.94 [3]
+         the bus, mailbox flash, LIT PIP)                       6.68 / 6.30 [3]
+       border-strong at 0.6 on bg-inset (pip SOCKET)            1.85 / 1.92 [—]
+       accent on bg-subtle       (letter over an entity, letter
+         between entities, halo)                                6.93 / 6.94 [3]
        accent on bg-raised       (agent box edge, mark, port,
          letter over an agent box)                              7.17 / 6.67 [3]
-       accent on bg              (letter between entities)      7.36 / 7.31 [3]
        text on bg-subtle         (bubble icon)                 16.74 /14.99 [4.5]
+
+     The figure lives inside #why, which is a section--subtle, so the page
+     ground behind it is --bg-subtle and there is no longer any pairing in this
+     figure that lands on plain --bg. Moving it back to an unshaded section
+     would raise every one of these, not lower them, but the numbers would then
+     be wrong in the safe direction rather than right.
+
+     The socket is the one entry with no threshold beside it, and that is
+     deliberate rather than an omission. A socket carries no information on its
+     own: it is the outline of a slot that is not filled, and what a reader has
+     to see is the LIT pip, which clears 3:1 twice over in both themes. Depth is
+     carried by how many pips are lit and by which slots they sit in — count and
+     position — so nothing is conveyed by the socket's colour alone. Making the
+     sockets clear 3:1 would put four permanent high-contrast marks under every
+     mailbox and drown the pips they exist to frame.
 
      Every figure above was recomputed from the tokens in section 1 rather than
      carried forward. One did not reproduce: the dimmed bubble icon was written
@@ -877,16 +932,10 @@ main { flex: 1 0 auto; }
   --wgd-llm:      var(--accent-subtle);
 }
 
-/* The sourcing that used to live in the figcaption. It is not decoration: it
-   is the accuracy guardrail for a vision diagram, and the site's rule is that
-   no claim ships untraceable. The rest of it is in #vision-desc. */
-.vision__source {
-  margin-bottom: 1.75rem;
-  font-size: 0.88rem;
-  line-height: 1.6;
-}
-
-.vision__source cite { font-style: italic; }
+/* .vision__source is gone. It held the sourcing clause above the figure, and
+   the clause was removed along with the figure's heading — the drawing is
+   self-describing and the problem statement above it does the framing. The
+   sourcing now lives only in #vision-desc; see the note in the markup. */
 
 /* Full width, no narrative column beside it — the drawing carries itself, so
    it gets the whole container.
@@ -1052,12 +1101,59 @@ main { flex: 1 0 auto; }
 .wgd-flag-arm   { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
 .wgd-flag-blade { fill: currentColor; }
 
-/* One per (mailbox, hop) incidence, stacked exactly over its mailbox and
-   invisible until that hop runs — approach (2) in the note at the top of this
-   section. Stacking is correct here and wrong for the flags, and the
-   difference is the resting state: this rests at opacity 0, so the copies that
-   are not firing draw nothing at all. No two windows on the same mailbox
-   overlap either, so the accent stroke is never painted twice over itself. */
+/* ---- The pip tray -------------------------------------------------------
+   How many messages are waiting in this mailbox, out of the four it can hold.
+   The client's reference is Mini Motorways, where a building carries small
+   marks for the demand it has pending; the same read applies here, and it is
+   the one thing in this figure that a still frame states outright — a moving
+   letter can only ever say "a message exists", never "three are waiting".
+
+   Four sockets, always drawn. They are the capacity, which is what turns
+   "some are waiting" into "three of four". Four pips light in them, left-packed
+   in the mailbox's own frame: pip N is lit whenever depth >= N. A pip is never
+   bound to a particular letter — at this size nobody tracks an individual pip,
+   and depth-based windows keep one clean keyframe per pip instead of one per
+   (letter, pip) pair.
+
+   HOLLOW VERSUS FILLED, NOT JUST GREY VERSUS ACCENT. The socket is a ring and
+   the lit pip is a disc that covers it exactly (socket r 2.4 + 0.9 stroke =
+   2.85 outer; pip r 2.9), so the difference between waiting and empty is a
+   difference in form as well as in colour. With the count and the position
+   carrying the depth on top of that, nothing here depends on colour alone.
+
+   Lit pips are --wgd-accent, which in this figure already means "a live
+   message". A message parked in a mailbox is a live message, so this is the
+   same meaning and not a new one — see the note on colour rules above.
+
+   The .wgd-tray group around them carries no styles and is not meant to: it is
+   a DOM grouping so that the eight-or-so circles under a mailbox read as one
+   part in the markup, and so that a future change has something to hang off. */
+.wgd-socket {
+  fill: none;
+  stroke: var(--wgd-edge);
+  stroke-width: 0.9;
+  opacity: 0.6;
+}
+
+.wgd-pip {
+  fill: var(--wgd-accent);
+  opacity: 0;
+}
+
+/* The receiving mailbox, while a letter is on its way to it. One element per
+   mailbox, resting at opacity 0, carrying every one of its own windows.
+
+   RECEIVER ONLY, and this is a fix rather than a preference. It used to be
+   stacked one element per (mailbox, hop) INCIDENCE, sender's and receiver's
+   alike, so a mailbox lit up on hops where its agent was posting — the two
+   left-hand mailboxes never did anything else, and the HPC mailbox lit on its
+   own return leg. A flash on the sender says nothing about the sender's
+   mailbox: what is happening there is a letter passing overhead.
+
+   It ends at arrival rather than running the length of the hop, so the flash
+   reads as the approach and the flag and the pip read as the arrival. No two
+   windows on any one mailbox overlap, so the accent stroke is never painted
+   twice over itself. */
 .wgd-mflash {
   fill: none;
   stroke: var(--wgd-accent);
@@ -1107,12 +1203,31 @@ main { flex: 1 0 auto; }
    same centre, so the group's bounding box stays symmetrical about it and the
    two never drift apart.
 
-   The routes are the four the dots used to run on, unchanged. They are here
-   rather than in the markup because offset-path is a CSS property.
-   --wgd-stop is how far along each route its receiving mailbox sits, measured
-   on the real geometry rather than normalised: the three cornered routes are
-   496.5 units long with the mailbox centre at 394.5, and the straight one is
-   298 with it at 196. */
+   SIX ROUTES, AND THE TWO NEW ONES ARE REVERSALS. h1-h4 are the four the dots
+   used to run on, unchanged. h5 and h6 are h2 and h1 read backwards — the same
+   points in the opposite order, with each quadratic's control point kept and
+   its endpoints swapped. Nothing new was drawn: they land on the same wires,
+   turn on the same two junction beads and stop at the same mailbox centres, so
+   no wire endpoint and no mailbox moves. They exist because the flash is now
+   receiver-only, and without a hop that ends at them the instrument and the
+   data store mailboxes would never light at all.
+
+   --wgd-stop is how far along each route its RECEIVING mailbox sits, measured
+   on the real geometry rather than normalised. Recomputed for v8 rather than
+   carried over, and the reversals come out identical to the forward routes,
+   which is the check that they really are reversals:
+
+     quarter-turn quadratic (450,180) (460,180) (460,190)   16.2323 units
+     cornered route  139 + 16.2323 + 186 + 16.2323 + 139 =  496.465
+       receiving mailbox centre at 139+16.2323+186+16.2323+37 = 394.465
+       394.465 / 496.465                                    = 79.4547%
+     straight route  609 - 311                              = 298
+       receiving mailbox centre 196 units along, 196/298    = 65.7718%
+
+   The mailbox centres those resolve to are (507,386) for the cloud, (507,180)
+   for HPC, (413,386) for the data store and (413,180) for the instrument —
+   each the middle of a 34x22 body, which is where a letter has to vanish for
+   the pause to read as "posted" rather than as "dropped nearby". */
 .wgd-letter {
   offset-rotate: 0deg;
   offset-distance: 0%;
@@ -1121,23 +1236,39 @@ main { flex: 1 0 auto; }
   opacity: 0;
 }
 
+/* h1  instrument -> cloud   */
 .wgd-letter--h1 {
   offset-path: path("M311,180 H450 Q460,180 460,190 V376 Q460,386 470,386 H609");
   --wgd-stop: 79.45%;
 }
 
+/* h2  data store -> cloud   */
 .wgd-letter--h2 {
   offset-path: path("M311,386 H609");
   --wgd-stop: 65.77%;
 }
 
+/* h3  HPC -> cloud          */
+.wgd-letter--h3 {
+  offset-path: path("M609,180 H470 Q460,180 460,190 V376 Q460,386 470,386 H609");
+  --wgd-stop: 79.45%;
+}
+
+/* h4  cloud -> HPC          */
 .wgd-letter--h4 {
   offset-path: path("M609,386 H470 Q460,386 460,376 V190 Q460,180 470,180 H609");
   --wgd-stop: 79.45%;
 }
 
+/* h5  cloud -> data store   — h2 reversed */
 .wgd-letter--h5 {
-  offset-path: path("M609,180 H470 Q460,180 460,190 V376 Q460,386 470,386 H609");
+  offset-path: path("M609,386 H311");
+  --wgd-stop: 65.77%;
+}
+
+/* h6  cloud -> instrument   — h1 reversed */
+.wgd-letter--h6 {
+  offset-path: path("M609,386 H470 Q460,386 460,376 V190 Q460,180 450,180 H311");
   --wgd-stop: 79.45%;
 }
 
@@ -1236,191 +1367,383 @@ main { flex: 1 0 auto; }
    at full opacity with all five tethers drawn, the whole wire network, four
    mailboxes with their flags down, and no letters in flight. */
 
-/* The message loop. One 15s cycle; each event occupies the first 2.25s (15%)
-   of the keyframe and takes its place in the cycle by animation-delay:
+/* ==========================================================================
+   THE MESSAGE LOOP — ONE 24s CYCLE. THIS IS THE TIMETABLE.
+   ==========================================================================
 
-     0.30s  hop 1  instrument -> cloud
-     2.80s  hop 2  data store -> cloud
-     5.30s  step 3 the cloud agent reasons
-     7.80s  hop 4  cloud -> HPC
-    10.30s  hop 5  HPC -> cloud
-    12.80s  step 3 again, over what came back: the loop closing
-    15.00s  round again, without pausing
+   It was 15s and ran four hops one in, one out. v8 makes it a queue: three
+   messages arrive at the cloud's mailbox and WAIT there while the cloud agent
+   reasons, are collected as a BATCH, and only then does the cloud act. The
+   period moved to 24s to fit six hops, a 9.4s reasoning window and a rest.
 
-   Events are 2.50s apart and 2.25s long, so no two overlap: one letter is in
-   the air at a time and the order reads without being numbered. The 0.25s gap
-   is uniform, the wrap from the last event to the next cycle's first included.
+     t (s)    %        event
+     ------------------------------------------------------------------
+      0.50     2.083   h1  instrument -> cloud    departs
+      1.60     6.667   h1  posted. cloud depth 0->1, flag up, pip 1 lit
+      1.60     6.667   the cloud agent starts reasoning
+      3.00    12.500   h2  data store -> cloud    departs
+      4.10    17.083   h2  posted. depth 1->2, pip 2
+      5.50    22.917   h3  HPC -> cloud           departs
+      6.60    27.500   h3  posted. depth 2->3, pip 3
+      6.60-11.00       queue holds at 3. The agent is busy; the mail waits.
+     10.80    45.000   reasoning ends
+     11.00    45.833   h1 collected. depth 3->2
+     11.90    49.583   h2 collected. depth 2->1
+     12.80    53.333   h3 collected. depth 1->0, flag down, tray empty
+     13.60    56.667   h4  cloud -> HPC           departs
+     14.70    61.250   h4  posted.  HPC depth 0->1
+     15.10    62.917   h5  cloud -> data store    departs
+     16.20    67.500   h5  posted.  store depth 0->1
+     16.60    69.167   h6  cloud -> instrument    departs
+     17.50    72.917   h4 collected. HPC 1->0
+     17.70    73.750   h6  posted.  instrument depth 0->1
+     19.00    79.167   h5 collected. store 1->0
+     20.50    85.417   h6 collected. instrument 1->0
+     20.87    86.958   the last letter leaves the drawing
+     20.87-24         rest. Nothing in flight, every tray empty.
+     24.00            round again, without pausing
 
-   This cycle was 11s and ran too fast to follow. Everything in it is 15/11
-   longer now — 36% — including the travel legs, because the keyframe
-   percentages are unchanged and only the duration grew. The bubble side was
-   retuned with it, below, to keep the two periods coprime. */
+   DEPTH STEP FUNCTION PER MAILBOX. This is the one thing a reader cannot
+   recover from the keyframes, because each pip keyframe only carries the
+   union of the intervals where depth >= N, not the depth itself:
+
+     cloud       0 on [0, 1.6)    1 on [1.6, 4.1)    2 on [4.1, 6.6)
+                 3 on [6.6, 11.0) 2 on [11.0, 11.9)  1 on [11.9, 12.8)
+                 0 on [12.8, 24)
+     HPC         0 elsewhere,  1 on [14.7, 17.5)
+     data store  0 elsewhere,  1 on [16.2, 19.0)
+     instrument  0 elsewhere,  1 on [17.7, 20.5)
+
+   and everything else is derived from it, not hand-authored:
+
+     pip N       lit exactly where depth >= N. Cloud: pip 1 [1.6, 12.8),
+                 pip 2 [4.1, 11.9), pip 3 [6.6, 11.0), pip 4 never — so the
+                 cloud has three pip elements and four sockets. The other
+                 three mailboxes reach 1, so one pip element each.
+     flag        up exactly where depth >= 1. That is pip 1's window with
+                 rotation instead of opacity, and it is why all four mailboxes
+                 animate their flag now: on the old four-hop schedule two of
+                 them never received anything.
+     flash       runs from departure to arrival, on the RECEIVER only.
+
+   TWO CLOCKS, AND KNOW WHICH ONE YOU ARE READING.
+
+     Absolute. The cloud mailbox and the three letters queued in it carry no
+     delay, so every percentage in their keyframes is a position in the 24s
+     loop and can be read straight off the table above. Their behaviour is
+     unique, so sharing would buy nothing.
+
+     Delayed. The three peripheral mailboxes do the same thing three times,
+     1.5s apart, so they share four keyframes — wgd-letter-out, wgd-mflash-rx,
+     wgd-flag-rx, wgd-pip-rx — written relative to their own departure and
+     placed by .wgd-to-hpc / .wgd-to-store / .wgd-to-instr at the foot of this
+     section. Every element of one delivery — the letter, and the receiving
+     mailbox's flash, flag and pip — carries the SAME delay class, so retiming
+     a delivery is one number. Add the delay to a relative percentage to get an
+     absolute one; 13.6s + 4.583% of 24s = 14.7s is h4's arrival.
+
+   ONE OVERLAP, AND IT IS DELIBERATE. The three dispatches are 1.5s apart and
+   each occupies 4.27s, so h4's collection (17.50-17.87) overlaps the tail of
+   h6's outbound flight (16.60-17.70) by 0.2s. Two letters are on screen at
+   once for that fifth of a second, at opposite ends of the drawing — h4 is
+   running into the HPC box at top right, h6 is arriving at the instrument
+   mailbox at top left. The old "one letter in the air at a time" rule came
+   from a strictly linear five-step story; v8's story is a batch fanning out,
+   and the order still reads. Closing the gap would need the parks cut to
+   under 1.7s, which is too short for a flag to rise, hold and fall.
+
+   PHASE-LOCKING. Nothing else in the figure may share a period with this loop.
+   The bubble focus cycle is 13s and the five orbits are 17, 22, 14, 19 and 16s;
+   none of them divides 24 and none equals it, which is the failure this figure
+   already had once (an 11s orbit against an 11s loop, phase-locked for good).
+   The weakest of them is the 16s orbit, gcd(16,24)=8, so that one bubble and
+   the letters realign every 48s — two full message loops, on a 7-unit drift
+   that nobody tracks. Stated rather than glossed: the previous comment here
+   claimed every orbit was coprime with the loop, and against 24 that is no
+   longer true. The flutter is 1.4s and 24/1.4 = 17.142..., still not a whole
+   number of flutters per cycle. */
 
 /* One letter's hop, in three parts: out of the sending agent to the receiving
-   mailbox, a wait inside that mailbox with its flag up, and then the short run
-   from the mailbox into the receiving agent.
+   mailbox, a wait inside that mailbox with its flag up and a pip lit, and then
+   the short run from the mailbox into the receiving agent.
 
    The wait is why this is a keyframe and not a straight 0 -> 100% sweep. A
    letter that arrives and vanishes says "delivered"; a letter that is posted,
-   sits, and is then collected says what Academy's exchange actually does.
+   sits, and is then collected says what Academy's exchange actually does. v8
+   does not invent that pause — it was already here — it LENGTHENS it, from a
+   fixed 0.75s to as much as 9.4s for the first letter into the cloud, and puts
+   a tray under the mailbox so the wait has something to count.
 
    The letter shrinks and fades as it is posted rather than parking on top of
-   the box, so what is visible during the wait is the raised flag — the mailbox
-   is holding the message, not wearing it.
+   the box, so what is visible during the wait is the raised flag and the pips
+   — the mailbox is holding the message, not wearing it.
 
-   Both travelling legs ease in and out, which does two things: it reads as
-   paper being carried rather than a marker being dragged, and it means the
-   speed is zero either side of the wait, so the fixed 0 -> 7.55% / 12.55% ->
-   15% time split does not show up as a jolt on the one route whose mailbox
-   sits at 65.77% rather than 79.45%. The timing functions are declared on the
-   keyframes that begin each offset-distance interval, which is where the
-   easing for that interval is taken from. */
-@keyframes wgd-letter {
-  0%      { offset-distance: 0%; opacity: 0; transform: scale(0.7);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
-  1.3%    { opacity: 1; transform: scale(1); }
-  6.3%    { opacity: 1; transform: scale(1); }
-  7.55%   { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62); }
-  12.55%  { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
-  13.6%   { opacity: 1; transform: scale(1); }
-  14.3%   { opacity: 1; }
-  15%     { offset-distance: 100%; opacity: 0; }
-  100%    { offset-distance: 100%; opacity: 0; }
+   Every leg is the same shape, and only the length of the park differs:
+
+     +0.00s  leaves the agent box, scaled to 0.7 and transparent
+     +0.19s  full size and opaque
+     +0.91s  still travelling
+     +1.10s  posted: at --wgd-stop, shrunk to 0.62 and gone
+      park   invisible, parked at the mailbox centre
+     +0.16s  reappears full size as the agent collects it
+     +0.26s
+     +0.37s  clear of the drawing at offset-distance 100%
+
+   Each travelling leg starts with an ease out of rest — the timing function is
+   declared on the keyframe that begins it, which is where CSS takes it from —
+   and runs linear from there; the arrival itself is masked by the shrink into
+   the mailbox, so the constant-time split does not show as a jolt on the two
+   straight routes, whose mailbox sits at 65.77% rather than 79.45%.
+
+   The three cornered routes cover 394.5 units in that 1.10s and the two
+   straight ones 196, so a letter on the long way round moves half again as
+   fast. That is unchanged from the 15s loop and is what the easing is for. */
+
+/* h1  instrument -> cloud. Posted at 1.60s, waits 9.4s, collected at 11.00s —
+   the longest wait in the figure, and the one that carries the whole idea. */
+@keyframes wgd-letter-q1 {
+  0%       { offset-distance: 0%; opacity: 0; transform: scale(0.7); }
+  2.083%   { offset-distance: 0%; opacity: 0; transform: scale(0.7);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  2.875%   { opacity: 1; transform: scale(1); }
+  5.875%   { opacity: 1; transform: scale(1); }
+  6.667%   { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62); }
+  45.833%  { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  46.5%    { opacity: 1; transform: scale(1); }
+  46.917%  { opacity: 1; transform: scale(1); }
+  47.375%  { offset-distance: 100%; opacity: 0; transform: scale(1); }
+  100%     { offset-distance: 100%; opacity: 0; transform: scale(0.7); }
+}
+
+/* h2  data store -> cloud. Posted at 4.10s, collected at 11.90s. */
+@keyframes wgd-letter-q2 {
+  0%       { offset-distance: 0%; opacity: 0; transform: scale(0.7); }
+  12.5%    { offset-distance: 0%; opacity: 0; transform: scale(0.7);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  13.292%  { opacity: 1; transform: scale(1); }
+  16.292%  { opacity: 1; transform: scale(1); }
+  17.083%  { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62); }
+  49.583%  { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  50.25%   { opacity: 1; transform: scale(1); }
+  50.667%  { opacity: 1; transform: scale(1); }
+  51.125%  { offset-distance: 100%; opacity: 0; transform: scale(1); }
+  100%     { offset-distance: 100%; opacity: 0; transform: scale(0.7); }
+}
+
+/* h3  HPC -> cloud. Posted at 6.60s, collected at 12.80s — last in, last out,
+   because a mailbox is a queue and this one drains in the order it filled. */
+@keyframes wgd-letter-q3 {
+  0%       { offset-distance: 0%; opacity: 0; transform: scale(0.7); }
+  22.917%  { offset-distance: 0%; opacity: 0; transform: scale(0.7);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  23.708%  { opacity: 1; transform: scale(1); }
+  26.708%  { opacity: 1; transform: scale(1); }
+  27.5%    { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62); }
+  53.333%  { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  54%      { opacity: 1; transform: scale(1); }
+  54.417%  { opacity: 1; transform: scale(1); }
+  54.875%  { offset-distance: 100%; opacity: 0; transform: scale(1); }
+  100%     { offset-distance: 100%; opacity: 0; transform: scale(0.7); }
+}
+
+/* h4, h5, h6 — the three dispatches. One keyframe, written relative to a
+   departure at 0, placed by the three .wgd-to-* delays. The park is 2.80s for
+   all three: long enough for the flag to rise, hold and fall, short enough to
+   keep the fan-out reading as one action. */
+@keyframes wgd-letter-out {
+  0%       { offset-distance: 0%; opacity: 0; transform: scale(0.7);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  0.792%   { opacity: 1; transform: scale(1); }
+  3.792%   { opacity: 1; transform: scale(1); }
+  4.583%   { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62); }
+  16.25%   { offset-distance: var(--wgd-stop); opacity: 0; transform: scale(0.62);
+             animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1); }
+  16.917%  { opacity: 1; transform: scale(1); }
+  17.333%  { opacity: 1; transform: scale(1); }
+  17.792%  { offset-distance: 100%; opacity: 0; transform: scale(1); }
+  100%     { offset-distance: 100%; opacity: 0; transform: scale(0.7); }
 }
 
 /* Flutter: a few degrees, on a period that is not a factor of the cycle, so no
    two passes of the same letter are identical. Paper moving through air, not a
-   wobble — the amplitude is deliberately below what reads as a gesture. It
-   slowed with the loop (1.05s -> 1.4s): held at its old period against a 36%
-   slower letter it stopped reading as air and started reading as a shiver.
-   15 / 1.4 = 10.714, so it still does not divide the cycle. */
+   wobble — the amplitude is deliberately below what reads as a gesture. It is
+   a property of the paper rather than of the schedule, so it did not move with
+   the loop. 24 / 1.4 = 17.143, so it still does not divide the cycle. */
 @keyframes wgd-flutter {
   0%    { transform: rotate(-3.4deg) translateY(0.5px); }
   50%   { transform: rotate(3.4deg)  translateY(-0.5px); }
   100%  { transform: rotate(-3.4deg) translateY(0.5px); }
 }
 
-/* Up as the letter is posted, down once the agent has collected it — a beat
-   after the letter leaves the box, which is what "collected" looks like. The
-   overshoot past vertical is the spring of a real flag being flicked up.
+/* THE FLAG IS PIP 1 WITH ROTATION INSTEAD OF OPACITY. Up whenever depth >= 1,
+   down otherwise; it is derived from the step function in the timetable above
+   and must not be authored independently of it. The overshoot past vertical is
+   the spring of a real flag being flicked up.
 
-   ONE KEYFRAME PER MAILBOX, NOT PER ARRIVAL. Both of these run undelayed on
-   the same 15s cycle as everything else, so their percentages are absolute
-   positions in the loop rather than offsets from a delay. A mailbox that
-   receives three hops gets three windows in one timeline, on one element.
+   ONE ELEMENT PER MAILBOX, HOWEVER MANY ARRIVALS. A lowered flag lies at
+   rotate(-90deg) along the roof and is VISIBLE, so a second element is not a
+   dormant copy, it is a drawn lowered flag under the raised one. That was the
+   ghost an earlier revision fixed, and it is why the cloud's three arrivals
+   are three windows in one timeline rather than three elements.
 
-   Every window is the same five-stop shape, offset by where its hop sits:
+   All four mailboxes have a flag animation now. Two of them used to sit at the
+   base style with no modifier, because on the old four-hop schedule they only
+   ever sent; the two return hops added in v8 are what changed that.
 
-     +7.55   still down. The letter has just reached the mailbox.
-     +8.90   flicked up, overshooting to +7deg, and turning accent.
-     +9.70   settles at vertical.
-     +13.60  held. The letter is being collected.
-     +14.90  back down, back to edge colour.
+   Every window is the same five-stop shape, hung off the arrival:
 
-   and a window's base offset is delay/15 * 100, so:
-
-     hop 1  delay  0.30s -> base  2.000%   -> cloud
-     hop 2  delay  2.80s -> base 18.667%   -> cloud
-     hop 4  delay  7.80s -> base 52.000%   -> HPC
-     hop 5  delay 10.30s -> base 68.667%   -> cloud
-
-   THIS IS THE ONE PLACE THE TIMETABLE IS DUPLICATED. Everything else on a hop
-   reads its position from the .wgd-t* delay classes at the foot of this
-   section; these two keyframes have that same timing baked into percentages,
-   because an undelayed element cannot borrow a delay. Retime the loop and
-   these must be recomputed from the line above, by hand. That is the price of
-   killing the ghost, and it is worth paying, but it is a real trap: nothing
-   will fail loudly if you forget. The flag will simply rise at the wrong
-   moment.
+     arrival     still down. The letter has just reached the mailbox.
+     +0.20s      flicked up, overshooting to +7deg, and turning accent.
+     +0.32s      settles at vertical.
+     collection  held. The batch is being collected.
+     +0.20s      back down, back to edge colour.
 
    The "still down" stop at the head of each window is not padding. Without it
    the flag would interpolate continuously from the previous window's fall
    straight into the next one's rise, and would spend the gap drifting upward
    instead of resting. */
+
+/* Cloud. Depth reaches 1 at 1.60s and returns to 0 at 12.80s, so this is ONE
+   raise spanning all three arrivals and the whole batch collection — not three.
+   That is the visible difference between a queue and a relay: on the old
+   schedule this flag went up and down three times. Undelayed, so every
+   percentage here is an absolute position in the 24s loop. */
 @keyframes wgd-flag-cloud {
   0%       { transform: rotate(-90deg); color: var(--wgd-edge); }
-
-  /* hop 1: the instrument's reading arrives */
-  9.55%    { transform: rotate(-90deg); color: var(--wgd-edge); }
-  10.9%    { transform: rotate(7deg); color: var(--wgd-accent); }
-  11.7%    { transform: rotate(0deg); }
-  15.6%    { transform: rotate(0deg); color: var(--wgd-accent); }
-  16.9%    { transform: rotate(-90deg); color: var(--wgd-edge); }
-
-  /* hop 2: the data store's context arrives. This is the tightest pair in the
-     loop — the flag is down for 9.3% of the cycle, 1.4s, between falling here
-     and rising again. Two distinct raises, not one long one. */
-  26.217%  { transform: rotate(-90deg); color: var(--wgd-edge); }
-  27.567%  { transform: rotate(7deg); color: var(--wgd-accent); }
-  28.367%  { transform: rotate(0deg); }
-  32.267%  { transform: rotate(0deg); color: var(--wgd-accent); }
-  33.567%  { transform: rotate(-90deg); color: var(--wgd-edge); }
-
-  /* hop 5: the simulation result comes back and the loop closes */
-  76.217%  { transform: rotate(-90deg); color: var(--wgd-edge); }
-  77.567%  { transform: rotate(7deg); color: var(--wgd-accent); }
-  78.367%  { transform: rotate(0deg); }
-  82.267%  { transform: rotate(0deg); color: var(--wgd-accent); }
-  83.567%  { transform: rotate(-90deg); color: var(--wgd-edge); }
-
+  6.667%   { transform: rotate(-90deg); color: var(--wgd-edge); }
+  7.5%     { transform: rotate(7deg);   color: var(--wgd-accent); }
+  8%       { transform: rotate(0deg); }
+  53.333%  { transform: rotate(0deg);   color: var(--wgd-accent); }
+  54.167%  { transform: rotate(-90deg); color: var(--wgd-edge); }
   100%     { transform: rotate(-90deg); color: var(--wgd-edge); }
 }
 
-/* One arrival, so one window — but still one element with the window written
-   at its absolute position, so both flags are read the same way. */
-@keyframes wgd-flag-hpc {
+/* The three peripheral mailboxes. One window, relative to their own departure:
+   up at +1.10s when the letter is posted, down at +3.90s when it is collected.
+   Placed by .wgd-to-hpc / .wgd-to-store / .wgd-to-instr. */
+@keyframes wgd-flag-rx {
   0%       { transform: rotate(-90deg); color: var(--wgd-edge); }
-
-  /* hop 4: the simulation request arrives */
-  59.55%   { transform: rotate(-90deg); color: var(--wgd-edge); }
-  60.9%    { transform: rotate(7deg); color: var(--wgd-accent); }
-  61.7%    { transform: rotate(0deg); }
-  65.6%    { transform: rotate(0deg); color: var(--wgd-accent); }
-  66.9%    { transform: rotate(-90deg); color: var(--wgd-edge); }
-
+  4.583%   { transform: rotate(-90deg); color: var(--wgd-edge); }
+  5.417%   { transform: rotate(7deg);   color: var(--wgd-accent); }
+  5.917%   { transform: rotate(0deg); }
+  16.25%   { transform: rotate(0deg);   color: var(--wgd-accent); }
+  17.083%  { transform: rotate(-90deg); color: var(--wgd-edge); }
   100%     { transform: rotate(-90deg); color: var(--wgd-edge); }
 }
 
-/* The sender's and the receiver's mailbox, for the length of the hop. */
-@keyframes wgd-mflash {
-  0%      { opacity: 0; }
-  2.2%    { opacity: 1; }
-  12.6%   { opacity: 1; }
-  15%     { opacity: 0; }
-  100%    { opacity: 0; }
+/* THE PIPS. Each one is the union of the intervals where its mailbox's depth
+   reaches its own number, and nothing else — read them against the step
+   function in the timetable above. The 0.10s edges are so a pip lights and
+   clears rather than snapping, at a duration short enough that the count is
+   never ambiguous.
+
+   ONE ANIMATION-NAME EACH. `animation-name: a, a` with two delays would put
+   two infinite animations on one pip and the second would win forever; the
+   windows go inside the keyframe instead. There is no pip in this figure that
+   needs more than the one keyframe it has. */
+
+/* cloud pip 1 — depth >= 1 on [1.6, 12.8) */
+@keyframes wgd-pip-q1 {
+  0%, 6.667%       { opacity: 0; }
+  7.083%, 53.333%  { opacity: 1; }
+  53.75%, 100%     { opacity: 0; }
 }
 
+/* cloud pip 2 — depth >= 2 on [4.1, 11.9) */
+@keyframes wgd-pip-q2 {
+  0%, 17.083%      { opacity: 0; }
+  17.5%, 49.583%   { opacity: 1; }
+  50%, 100%        { opacity: 0; }
+}
+
+/* cloud pip 3 — depth >= 3 on [6.6, 11.0) */
+@keyframes wgd-pip-q3 {
+  0%, 27.5%        { opacity: 0; }
+  27.917%, 45.833% { opacity: 1; }
+  46.25%, 100%     { opacity: 0; }
+}
+
+/* the peripheral mailboxes' single pip — depth >= 1 on [+1.10s, +3.90s) */
+@keyframes wgd-pip-rx {
+  0%, 4.583%       { opacity: 0; }
+  5%, 16.25%       { opacity: 1; }
+  16.667%, 100%    { opacity: 0; }
+}
+
+/* The receiving mailbox while a letter is inbound to it, ending at arrival —
+   so the flash is the approach and the flag and pip are the arrival. Three
+   windows for the cloud, which receives three; one for each of the others. */
+@keyframes wgd-mflash-cloud {
+  0%, 2.083%        { opacity: 0; }
+  2.75%, 6%         { opacity: 1; }
+  6.667%, 12.5%     { opacity: 0; }
+  13.167%, 16.417%  { opacity: 1; }
+  17.083%, 22.917%  { opacity: 0; }
+  23.583%, 26.833%  { opacity: 1; }
+  27.5%, 100%       { opacity: 0; }
+}
+
+@keyframes wgd-mflash-rx {
+  0%                { opacity: 0; }
+  0.667%, 3.917%    { opacity: 1; }
+  4.583%, 100%      { opacity: 0; }
+}
+
+/* The cloud agent reasoning, and THE REASON THE QUEUE EXISTS. One window, up
+   at 1.60s as the first message lands and down at 10.80s just before the batch
+   is collected: the second and third messages arrive at 4.10s and 6.60s and
+   have to wait, because the agent that would take them is busy. It used to be
+   two 2.25s windows on two stacked elements.
+
+   It breathes between full and 0.45 on a 1.5s beat rather than holding, so a
+   9.2s window reads as work in progress rather than as a static selection
+   ring, and lands on a peak before it goes — a conclusion, not a fade. */
 @keyframes wgd-think {
-  0%      { opacity: 0; }
-  2.25%   { opacity: 1; }
-  5.96%   { opacity: 0.3; }
-  9.72%   { opacity: 1; }
-  12.75%  { opacity: 0.3; }
-  15%     { opacity: 0; }
-  100%    { opacity: 0; }
+  0%, 6.667%   { opacity: 0; }
+  7.917%       { opacity: 1; }
+  14.167%      { opacity: 0.45; }
+  20.417%      { opacity: 1; }
+  26.667%      { opacity: 0.45; }
+  32.917%      { opacity: 1; }
+  39.167%      { opacity: 0.45; }
+  43.333%      { opacity: 1; }
+  45%, 100%    { opacity: 0; }
 }
 
-.vision.is-running :is(.wgd-letter, .wgd-flag, .wgd-mflash, .wgd-think) {
-  animation-duration: 15s;
+.vision.is-running :is(.wgd-letter, .wgd-flag, .wgd-pip, .wgd-mflash, .wgd-think) {
+  animation-duration: 24s;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
 
-.vision.is-running .wgd-letter  { animation-name: wgd-letter; }
-.vision.is-running .wgd-mflash  { animation-name: wgd-mflash; }
+/* The three letters queued at the cloud each carry their own park length, so
+   each names its own keyframe; the three dispatches are identical apart from
+   when they happen, so they share one and are placed by delay. */
+.vision.is-running .wgd-letter--h1 { animation-name: wgd-letter-q1; }
+.vision.is-running .wgd-letter--h2 { animation-name: wgd-letter-q2; }
+.vision.is-running .wgd-letter--h3 { animation-name: wgd-letter-q3; }
+.vision.is-running :is(.wgd-letter--h4, .wgd-letter--h5, .wgd-letter--h6) { animation-name: wgd-letter-out; }
+
+.vision.is-running .wgd-mflash--cloud { animation-name: wgd-mflash-cloud; }
+.vision.is-running .wgd-mflash--rx    { animation-name: wgd-mflash-rx; }
+
+.vision.is-running .wgd-pip--q1 { animation-name: wgd-pip-q1; }
+.vision.is-running .wgd-pip--q2 { animation-name: wgd-pip-q2; }
+.vision.is-running .wgd-pip--q3 { animation-name: wgd-pip-q3; }
+.vision.is-running .wgd-pip--rx { animation-name: wgd-pip-rx; }
+
 .vision.is-running .wgd-think   { animation-name: wgd-think; animation-timing-function: ease-in-out; }
 
-/* Only the two mailboxes that ever receive anything animate, and each names
-   its own keyframe. The instrument's and the data store's flags carry no
-   modifier at all, so they sit at the base style, down — the truthful state
-   for a mailbox nothing is waiting in.
-
-   No animation-delay: these keyframes are already positioned in the loop. If
-   one of them ever picks up a .wgd-t* class by accident, every window in it
-   shifts by that delay. */
+/* All four mailboxes animate their flag now. The cloud's keyframe is undelayed
+   and absolute; the other three share one keyframe and are placed by the delay
+   class they already carry for their letter, their flash and their pip. If the
+   cloud's flag ever picks up a .wgd-to-* class by accident, every window in it
+   shifts by that delay and nothing will fail loudly. */
 .vision.is-running .wgd-flag--cloud { animation-name: wgd-flag-cloud; animation-timing-function: ease-out; }
-.vision.is-running .wgd-flag--hpc   { animation-name: wgd-flag-hpc;   animation-timing-function: ease-out; }
+.vision.is-running .wgd-flag--rx    { animation-name: wgd-flag-rx;    animation-timing-function: ease-out; }
 
 /* The flutter is on its own clock: it is a property of the paper, not of the
    cycle, so it does not belong in the timetable below. */
@@ -1432,44 +1755,50 @@ main { flex: 1 0 auto; }
 }
 
 /* Motion path is the one thing in this figure without a graceful failure of
-   its own: with no offset-path, offset-distance moves nothing, and the four
+   its own: with no offset-path, offset-distance moves nothing, and the six
    letters would fade in and out on top of each other at the origin of the
-   viewBox rather than travelling. So take the letters and their flags out
-   together, leaving the mailbox flashes to carry the loop — which is what the
-   figure did before it had letters at all, and is coherent rather than broken.
+   viewBox rather than travelling. So the letters and their flutter come out.
    (Chrome 46+, Firefox 72+, Safari 16+ all support it; Safari 15 is who this
-   is for.) */
+   is for.)
+
+   The FLAGS AND PIPS NOW STAY IN, which is a change. They used to be dropped
+   with the letters, because a flag rising with no letter to explain it said
+   nothing. That is no longer true: the trays fill, hold and drain on their
+   own, and mailbox depth over time is the content of this figure now rather
+   than an annotation on the letters. A Safari 15 reader gets the queue without
+   the envelopes, which is the whole argument minus its illustration. */
 @supports not (offset-path: path("M0,0 H1")) {
-  .vision.is-running :is(.wgd-letter, .wgd-flutter, .wgd-flag) { animation-name: none; }
+  .vision.is-running :is(.wgd-letter, .wgd-flutter) { animation-name: none; }
 }
 
-/* The cycle's timetable. Everything that happens on a given hop — the letter
-   and both its mailbox flashes — carries the same class, so a retimed loop is
-   edited here.
+/* The three dispatches out of the cloud, and the only delays in the figure.
+   Everything belonging to one delivery — the letter, and the receiving
+   mailbox's flash, flag and pip — carries the same class, so retiming a
+   delivery is one number here. They are 1.5s apart.
 
-   It is no longer edited ONLY here. The flag on the receiving mailbox used to
-   ride these delays too, and that is precisely what forced one flag element
-   per arrival and produced the ghost. The flags now carry their own absolute
-   percentages in wgd-flag-cloud / wgd-flag-hpc above; if you change a delay
-   here, recompute them there. */
-.wgd-t1  { animation-delay: 0.3s; }
-.wgd-t2  { animation-delay: 2.8s; }
-.wgd-t3a { animation-delay: 5.3s; }
-.wgd-t4  { animation-delay: 7.8s; }
-.wgd-t5  { animation-delay: 10.3s; }
-.wgd-t3b { animation-delay: 12.8s; }
+   Nothing on the CLOUD mailbox may carry one of these. Its keyframes are
+   written as absolute positions in the 24s loop, because its behaviour is
+   unique and there is nothing for it to share with; a delay class landing on
+   one of them would shift every window in it silently. */
+.wgd-to-hpc   { animation-delay: 13.6s; }
+.wgd-to-store { animation-delay: 15.1s; }
+.wgd-to-instr { animation-delay: 16.6s; }
 
-/* The instrument bubbles. A 13s focus-and-tether cycle against the loop's 15s
-   means the two never settle into a shared beat, and an orbit period per
-   bubble that shares no factor with either means the five never line up.
+/* The instrument bubbles. A 13s focus-and-tether cycle against the message
+   loop's 24s means the two never settle into a shared beat, and an orbit
+   period per bubble that shares no factor with the focus cycle means the five
+   never line up with each other.
 
-   Both numbers moved when the loop slowed. 10s against 15s would have shared a
-   5s beat, so the focus cycle went to 13s (also 30% slower, which is what the
-   figure needed anyway). The orbit periods moved for the same reason and for
-   one that predates this revision: the third bubble used to orbit in exactly
-   11s, the length of the old message loop, so that one bubble was phase-locked
-   to the letters for good. Every period below is coprime with both 15 and 13.
-   Check that before changing any of them. */
+   NOTHING BELOW MOVED IN v8, and the claim that used to sit here has been
+   corrected rather than carried forward. It read "every period below is
+   coprime with both 15 and 13", which was true of the 15s loop and is not true
+   of the 24s one: gcd(22,24)=2, gcd(14,24)=2 and gcd(16,24)=8. What actually
+   matters is the failure this figure had once — an orbit of exactly 11s
+   against a loop of exactly 11s, phase-locked for good — and none of 17, 22,
+   14, 19, 16 or 13 either equals 24 or divides it. The tightest coupling left
+   is the 16s orbit realigning with the letters every 48s, on a 7-unit drift.
+   If you retime either cycle, check equality and division first, and write
+   down what you actually computed. */
 
 @keyframes wgd-tether {
   0%    { stroke-dashoffset: 100; }
@@ -1566,9 +1895,10 @@ main { flex: 1 0 auto; }
 .vision.is-running .wgd-bubbles > :nth-child(5) :is(.wgd-bub-ring, .wgd-ico, .wgd-bub-mark) { animation-delay: -10.4s; }
 
 /* Orbit period and direction per bubble. No two share a period; none is a
-   multiple of the 13s focus cycle; and every one is coprime with the 15s
-   message loop, so no bubble ever locks to the letters. 17, 22, 14, 19, 16 —
-   none divisible by 3, 5 or 13. */
+   multiple of the 13s focus cycle; and none equals or divides the 24s message
+   loop, so no bubble ever locks to the letters. 17, 22, 14, 19, 16 — none
+   divisible by 13, and 24 divided by each of them is 1.41, 1.09, 1.71, 1.26
+   and 1.5. See the note above for what "coprime" used to claim here. */
 .vision.is-running .wgd-bub:nth-child(1) .wgd-bub-orbit { animation-name: wgd-orbit-a; animation-duration: 17s; animation-delay: -2s; }
 .vision.is-running .wgd-bub:nth-child(2) .wgd-bub-orbit { animation-name: wgd-orbit-b; animation-duration: 22s; animation-delay: -9s; }
 .vision.is-running .wgd-bub:nth-child(3) .wgd-bub-orbit { animation-name: wgd-orbit-a; animation-duration: 14s; animation-delay: -5s; }
@@ -2300,6 +2630,8 @@ tbody tr:last-child td { border-bottom: 0; }
   .code-band__text { max-width: var(--measure); }
 
   .arch-split { grid-template-columns: 1fr; gap: 2.5rem; }
+  /* 210px for a term plus a readable description does not fit here; stack. */
+  .arch-split--single .dl-list__row { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
   .arch-figure__media { padding: 1rem; }
 
   .dl-list--split { columns: 1; }
@@ -2421,11 +2753,26 @@ tbody tr:last-child td { border-bottom: 0; }
          instrument;
        - all five tethers drawn full length, so the connections read as made
          rather than as caught mid-formation;
-       - the whole wire network drawn, every mailbox on the rail, no letters in
-         flight and no reasoning halo;
-       - every mailbox flag down, which is the state of a mailbox with nothing
-         waiting in it. What the flag means is in the text alternative, because
-         with no letters moving there is nothing to infer it from.
+       - the whole wire network drawn, every mailbox on the rail and no letters
+         in flight.
+
+     THE MESSAGE LAYER IS THE EXCEPTION, AND IT GETS BETTER RATHER THAN WORSE.
+     Queue depth is legible in a still frame in a way a moving letter never
+     was, so freezing everything at its base style would throw away the one
+     part of this figure that does not need motion. The base styles alone would
+     land on four empty trays, four lowered flags and no halo — an idle
+     exchange, which is a state the loop is only in for three seconds out of
+     twenty-four and which teaches nothing.
+
+     So the static frame is a real, chosen moment: t = 8s, the middle of the
+     reasoning window. The cloud's mailbox holds three of its four, flag up;
+     the cloud agent's halo is on, which is WHY they are waiting; the other
+     three trays are empty with their flags down. That is the whole v8 idea in
+     one frame — sense, queue, reason — and it is the only frame that states it
+     without motion.
+
+     Depth is carried by the count and by which sockets are filled, not by
+     colour: three lit and one empty reads as three of four in monochrome.
 
      The order of the loop is in the text alternative. It is not drawn here and
      it is not drawn in motion either: the numbered markers went with the step
@@ -2440,8 +2787,10 @@ tbody tr:last-child td { border-bottom: 0; }
      trailing comma with an empty body, so the whole thing was a parse error
      and nothing in this block applied at all.
 
-     No colour is set here. Freezing motion must not repaint anything; the
-     tokens have already handled the theme. */
+     The one colour set below is the raised cloud flag's, and it is the same
+     --wgd-accent the moving version raises it in — a state, not a repaint.
+     Nothing here defines a colour of its own; the tokens have already handled
+     the theme. */
   .vision .wgd-bub-orbit,
   .vision .wgd-bub-mark,
   .vision .wgd-bub-ring,
@@ -2450,10 +2799,22 @@ tbody tr:last-child td { border-bottom: 0; }
   .vision .wgd-letter,
   .vision .wgd-flutter,
   .vision .wgd-flag,
+  .vision .wgd-pip,
   .vision .wgd-think,
   .vision .wgd-mflash {
     animation: none !important;
   }
+
+  /* t = 8s: three messages waiting at the cloud, its flag up, its agent
+     reasoning. Every one of these overrides a base style of the same element
+     at one class more specificity, so nothing here needs !important. */
+  .vision .wgd-pip--q1,
+  .vision .wgd-pip--q2,
+  .vision .wgd-pip--q3 { opacity: 1; }
+
+  .vision .wgd-flag--cloud { transform: rotate(0deg); color: var(--wgd-accent); }
+
+  .vision .wgd-think { opacity: 1; }
 }
 
 @media print {

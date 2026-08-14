@@ -115,177 +115,21 @@ asyncio.run(main())
         </p>
       </div>
     </div>
-  </div>
-</section>
 
-<section class="section section--ruled code-bands-section">
-  <div class="container">
-    <div class="code-bands">
+    {%- comment -%}
+      NO HEADING, NO SOURCING CLAUSE ABOVE THIS FIGURE. Both were removed
+      deliberately: the drawing is self-describing and the section title and
+      problem text above already frame it. Do not reintroduce a caption, a
+      legend, a step list or an explanatory lead — every one of those has been
+      tried on this figure and removed.
 
-      <div class="code-band">
-        <div class="code-band__text">
-          <span class="band-number">01</span>
-          <h2>Define an agent</h2>
-          <p>
-            An agent is a class. <code>@action</code> methods can be invoked
-            remotely by users or by peer agents; <code>@loop</code> methods run
-            the agent's autonomous control loops until shutdown.
-          </p>
-          <p>
-            State lives on the instance and persists across invocations, so an
-            agent can hold a model, a queue, or a live connection to an
-            instrument rather than rebuilding it per call.
-          </p>
-        </div>
-        <div class="code-band__code">
-          <div class="code-block">
-            <div class="code-block__header">
-              <span>Defining an agent</span>
-            </div>
-{% highlight python %}
-import asyncio
-from academy.agent import Agent, action, loop
-
-
-class SensorMonitorAgent(Agent):
-    def __init__(self) -> None:
-        super().__init__()
-        self.last_reading: float | None = None
-        self.process_threshold: float = 1.0
-
-    @action
-    async def get_last_reading(self) -> float | None:
-        return self.last_reading
-
-    @loop
-    async def monitor(self, shutdown: asyncio.Event) -> None:
-        # read_sensor_data and process_reading are yours to supply.
-        while not shutdown.is_set():
-            value = await read_sensor_data()
-            self.last_reading = value
-            if value >= self.process_threshold:
-                await process_reading(value)
-            await asyncio.sleep(1)
-{% endhighlight %}
-          </div>
-        </div>
-      </div>
-
-      <div class="code-band">
-        <div class="code-band__text">
-          <span class="band-number">02</span>
-          <h2>Let agents call each other</h2>
-          <p>
-            Agents hold <em>handles</em> to other agents and invoke their actions
-            directly. Pass a handle in at construction and a coordinator can
-            delegate work without knowing where the other agents are running.
-          </p>
-          <p>
-            Communication is asynchronous throughout: handles send messages to a
-            mailbox managed by an exchange.
-          </p>
-        </div>
-        <div class="code-band__code">
-          <div class="code-block">
-            <div class="code-block__header">
-              <span>Agent-to-agent calls</span>
-            </div>
-{% highlight python %}
-from __future__ import annotations
-
-from academy.agent import Agent, action
-from academy.handle import Handle
-
-
-class Lowerer(Agent):
-    @action
-    async def lower(self, text: str) -> str:
-        return text.lower()
-
-
-class Coordinator(Agent):
-    def __init__(self, lowerer: Handle[Lowerer]) -> None:
-        super().__init__()
-        self.lowerer = lowerer
-
-    @action
-    async def process(self, text: str) -> str:
-        return await self.lowerer.lower(text)
-{% endhighlight %}
-          </div>
-        </div>
-      </div>
-
-      <div class="code-band">
-        <div class="code-band__text">
-          <span class="band-number">03</span>
-          <h2>Run it anywhere</h2>
-          <p>
-            Swap the exchange and the executor; the agent code does not change.
-            A thread pool and a local exchange for development; a process pool
-            and Redis across nodes; a Globus-backed cloud exchange across
-            institutions.
-          </p>
-          <p>
-            Each exchange has its own prerequisites, so
-            <a href="{{ '/start/#exchanges' | relative_url }}">check what you need to provide</a>
-            before picking one.
-          </p>
-        </div>
-        <div class="code-band__code">
-          <div class="code-block">
-            <div class="code-block__header">
-              <span>Distributing across nodes</span>
-            </div>
-{% highlight python %}
-from concurrent.futures import ProcessPoolExecutor
-
-from academy.exchange import RedisExchangeFactory
-from academy.manager import Manager
-
-
-async def main() -> None:
-    async with await Manager.from_exchange_factory(
-        factory=RedisExchangeFactory('<REDIS HOST>', port=6379),
-        executors=ProcessPoolExecutor(max_workers=4),
-    ) as manager:
-        ...
-{% endhighlight %}
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="band-next">
-      <a class="button button--secondary" href="{{ '/start/' | relative_url }}">Run these locally &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<section class="section section--ruled" id="architecture">
-  <div class="container">
-    <div class="section-head">
-      <span class="section-eyebrow">Architecture</span>
-      <h2 class="section-title">How Academy fits together</h2>
-      <p class="section-lead">
-        Two planes: the exchange moves messages between agents, and the executor
-        decides where an agent actually runs. Keeping them separate is what lets
-        the same agent code work on a laptop and across federated research infrastructure.
-        The first figure below shows <em>where</em> agents end up and why; the
-        second shows the machinery that puts them there.
-      </p>
-    </div>
-
-    <h3 class="year-heading">Where agents live</h3>
-
-    <p class="measured vision__source">
-      Design intent, not a deployment record: the four placements, and the single
-      reasoning agent among three micro-services, follow the project's experiences
-      paper, <cite>Patterns and Experiences from Deploying Agents in Scientific
-      Applications</cite>. Instrument types are named as categories only &mdash; no
-      specific integration, and no named facility, is claimed.
-    </p>
+      The sourcing that used to sit here — design intent rather than a
+      deployment record, placements following the experiences paper, instrument
+      types named as categories only with no specific integration or named
+      facility claimed — now lives ONLY in the text alternative at
+      #vision-desc. If that description is ever trimmed, the claim goes
+      unsourced on the page entirely.
+    {%- endcomment -%}
 
     {%- comment -%}
       A vision diagram, not a deployment record.
@@ -343,9 +187,19 @@ async def main() -> None:
         the size of the other three, and they never stop moving while the
         figure is on screen: motion plus connection is the content, which is
         that the slot takes any number of capabilities.
-      - The mailbox flags encode whether a message is waiting to be collected.
-        They are not ornament, and #vision-desc says what they mean because a
-        state that only exists in the drawing is a state some readers never get.
+      - The mailbox flags and the pip tray under each mailbox encode queue
+        state: the flag says "something is waiting", the pips say how many are
+        waiting out of a capacity of four. They are not ornament, and
+        #vision-desc says what they mean because a state that only exists in
+        the drawing is a state some readers never get.
+      - Messages ACCUMULATE and DRAIN AS A BATCH rather than being delivered
+        one in, one out. Three arrive at the cloud mailbox and queue there
+        while the cloud agent — the only one that reasons — is busy reasoning;
+        it collects all three when it finishes, then acts. That is the paper's
+        claim for persistent mailboxes drawn rather than asserted, and the
+        cloud agent's think cycle is what gives the queue its cause. If the
+        think window and the queue window are ever pulled apart, the figure
+        goes back to showing arbitrary traffic.
     {%- endcomment -%}
 
     <figure class="vision" data-vision>
@@ -543,105 +397,172 @@ async def main() -> None:
           <circle class="wgd-junction" cx="460" cy="386" r="6"/>
 
           <!-- ================= Mailboxes =================================
-               One per agent, on the side of the rail its agent sits on. Each
-               hop below passes through exactly two of them: the sender's and
-               the receiver's, and each of those incidences is a stacked
-               .wgd-mflash on the hop's own delay class. The cloud agent has
-               four because every hop in the cycle has it at one end; the HPC
-               agent has two; the instrument and the data store send once each.
-               That is what makes "one mailbox per agent, and every hop goes
-               through two of them" legible rather than asserted.
+               One per agent, on the side of the rail its agent sits on. Every
+               hop still passes through two of them, but only ONE of the two
+               now lights: the receiver's, and only while the letter is on its
+               way in. It used to be both, which is why a mailbox lit up on a
+               hop where it was the sender — the instrument and the data store
+               flashed on hops they were posting, not collecting, and so did
+               the HPC mailbox on its return leg. A flash that fires when you
+               send says nothing about your mailbox.
 
-               All four are ONE glyph — an arched body and a flag, and nothing
-               else — drawn at local coordinates in a 34x22 box and only
-               placed. There was a door seam and a knob on the body once. At
-               the size this figure actually renders they were two marks about
-               a pixel wide sitting inside a 34-unit body, so they read as
-               noise on the metal rather than as a door, and they are gone. The
-               body path is untouched, so the footprint is identical and no
-               wire endpoint or spine proportion moves. The right-hand pair is
-               the same glyph mirrored, scale(-1,1), which is what puts every
-               flag on the shoulder facing the rail — that is now the only job
-               the mirror does, and it is still load-bearing.
+               Fixing that on the old four-hop schedule would have left the two
+               left-hand mailboxes permanently dark, because on that schedule
+               they only ever sent. So the loop gained the two return hops that
+               were missing — cloud to the data store, cloud to the instrument
+               — and all four mailboxes now receive. Both new routes are the
+               existing routes reversed, so no new geometry was authored and
+               no wire endpoint moved.
 
-               THE FLAG IS STATE, NOT DECORATION. Academy's mailboxes are
-               persistent: a message sent to an agent that is not there to take
-               it waits in that agent's mailbox until it comes back. So the
-               flag goes up when a letter is posted into a mailbox and comes
-               down when the agent collects it, and in between the letter is
-               parked inside the box, out of sight. Flag up means "there is a
-               message here that has not been collected yet" — a real property
-               of the exchange, and the reason this figure draws mailboxes
-               rather than queues. It is stated in #vision-desc too, because a
-               reader who cannot see the flag still needs the property.
+               All four are ONE glyph — an arched body, a flag and a pip tray —
+               drawn at local coordinates in a 34x22 box and only placed. There
+               was a door seam and a knob on the body once. At the size this
+               figure actually renders they were two marks about a pixel wide
+               sitting inside a 34-unit body, so they read as noise on the
+               metal rather than as a door, and they are gone. The body path is
+               untouched, so the footprint is identical and no wire endpoint or
+               spine proportion moves. The right-hand pair is the same glyph
+               mirrored, scale(-1,1), which is what puts every flag on the
+               shoulder facing the rail — that is now the only job the mirror
+               does, and it is still load-bearing.
 
-               ONE FLAG ELEMENT PER MAILBOX, however many hops arrive at it.
-               The cloud agent receives three of the four hops and has one
-               flag; its keyframe carries all three raise windows at their own
-               percentages of the loop. It used to carry three flag elements on
-               three delays, and that is what produced the ghost this revision
-               fixes: a resting flag lies at rotate(-90deg) along the roof, so
-               raising one of the three drew the other two, lowered, directly
-               underneath it.
+               THE FLAG AND THE TRAY ARE STATE, NOT DECORATION. Academy's
+               mailboxes are persistent: a message sent to an agent that is not
+               there to take it waits in that agent's mailbox until it comes
+               back. The flag says THAT something is waiting; the tray of four
+               pips says HOW MANY, out of the four the box can hold. Together
+               they are the reason this figure draws mailboxes rather than
+               queues, and they are stated in #vision-desc too, because a state
+               that only exists in the drawing is a state some readers never
+               get.
+
+               THE TRAY. Four sockets, always drawn, faint: they are the
+               capacity, so three waiting reads as "three of four" rather than
+               as "some". Four pips sit in them and light left-packed — pip N
+               is lit whenever depth >= N — so depth is carried by how many are
+               lit and where they sit, not by colour alone. A pip is never tied
+               to a particular letter; nobody tracks individual pips at this
+               size, and depth-based windows keep one clean keyframe per pip.
+               A pip that never lights in this cycle is simply not emitted; its
+               socket still is, because the capacity is still four.
+
+               The trays live inside the mailbox groups, so the right-hand pair
+               inherits scale(-1,1) and fills right-to-left on screen. That was
+               checked rather than discovered: it means BOTH columns fill
+               towards the rail, which is the symmetry the rest of the exchange
+               already has. Lifting the trays out of the mirrored groups to
+               force left-to-right on all four would break that symmetry to fix
+               nothing.
+
+               Local geometry, recomputed rather than assumed: pip centres at
+               x = 5, 13, 21, 29 — 8 apart, spanning 5..29, centred on the
+               body's own 17 — and y = 28, which puts the bottom row at an
+               absolute y of 403 with the pip edge at 405.9 against a box floor
+               of 417, and the top row at 197, clear of the y=180 wire. The
+               spacing is 8 rather than the 7 first sketched because a lit pip
+               is 5.8 units across: at 7 the gap between two lit pips was 1.2
+               units, about a pixel, and three lit pips read as one bar rather
+               than as three marks.
+
+               ONE FLAG, ONE FLASH AND ONE PIP ELEMENT PER SOCKET, however many
+               hops arrive at the mailbox. The cloud receives three and each of
+               its three elements carries all three windows inside a single
+               keyframe. Stacking one element per arrival is what produced the
+               ghost an earlier revision fixed: a resting flag lies at
+               rotate(-90deg) along the roof, and an unlit pip is a visible
+               socket, so a spare copy is not invisible, it is a drawn lowered
+               flag or a drawn empty socket sitting under the live one.
 
                Several windows inside ONE keyframe is one animation with
                several events. That is safe under `infinite` and is not the
                duplicated-`animation-name` trap this project hit earlier —
                that one was two infinite animations on a single element, where
                the later declaration wins forever because both are permanently
-               in their active phase. Timing lives in CSS section 9b.
+               in their active phase. Timing lives in CSS section 9b, and the
+               depth step function for each mailbox is written out there. -->
 
-               In this cycle the instrument and the data store only ever send,
-               so their flags never rise. That is the drawn loop being honest,
-               not an omission. -->
+          <!-- INSTRUMENT — receives the last of the three dispatches. -->
           <g transform="translate(396,169)">
             <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
             <g transform="translate(28.5,2.6)">
-              <!-- the instrument only ever sends: this flag never rises -->
-              <g class="wgd-flag">
+              <g class="wgd-flag wgd-flag--rx wgd-to-instr">
                 <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
                 <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
               </g>
             </g>
-            <path class="wgd-mflash wgd-t1" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g class="wgd-tray">
+              <circle class="wgd-socket" cx="5"  cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="13" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="21" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="29" cy="28" r="2.4"/>
+              <!-- depth never exceeds 1 here, so one pip and three empty
+                   sockets: the capacity is four whether or not it is used. -->
+              <circle class="wgd-pip wgd-pip--rx wgd-to-instr" cx="5" cy="28" r="2.9"/>
+            </g>
+            <path class="wgd-mflash wgd-mflash--rx wgd-to-instr" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
+
+          <!-- DATA STORE — receives the second of the three dispatches. -->
           <g transform="translate(396,375)">
             <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
             <g transform="translate(28.5,2.6)">
-              <!-- the data store only ever sends: this flag never rises -->
-              <g class="wgd-flag">
+              <g class="wgd-flag wgd-flag--rx wgd-to-store">
                 <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
                 <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
               </g>
             </g>
-            <path class="wgd-mflash wgd-t2" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g class="wgd-tray">
+              <circle class="wgd-socket" cx="5"  cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="13" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="21" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="29" cy="28" r="2.4"/>
+              <circle class="wgd-pip wgd-pip--rx wgd-to-store" cx="5" cy="28" r="2.9"/>
+            </g>
+            <path class="wgd-mflash wgd-mflash--rx wgd-to-store" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
+
+          <!-- HPC FACILITY — receives the first of the three dispatches. -->
           <g transform="translate(524,169) scale(-1,1)">
             <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
             <g transform="translate(28.5,2.6)">
-              <!-- one arrival, hop 4: the simulation request. One window. -->
-              <g class="wgd-flag wgd-flag--hpc">
+              <g class="wgd-flag wgd-flag--rx wgd-to-hpc">
                 <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
                 <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
               </g>
             </g>
-            <path class="wgd-mflash wgd-t4" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
-            <path class="wgd-mflash wgd-t5" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g class="wgd-tray">
+              <circle class="wgd-socket" cx="5"  cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="13" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="21" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="29" cy="28" r="2.4"/>
+              <circle class="wgd-pip wgd-pip--rx wgd-to-hpc" cx="5" cy="28" r="2.9"/>
+            </g>
+            <path class="wgd-mflash wgd-mflash--rx wgd-to-hpc" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
+
+          <!-- CLOUD — the queue. Three arrivals, one batch collection, so
+               three of the four pips light and the tray is the only place in
+               the figure where depth is ever greater than one. Its flag, its
+               flash and each of its pips is a single element carrying every
+               window it needs. -->
           <g transform="translate(524,375) scale(-1,1)">
             <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
             <g transform="translate(28.5,2.6)">
-              <!-- three arrivals, hops 1, 2 and 5. ONE element, three windows
-                   in its keyframe. Three stacked elements is what ghosted. -->
               <g class="wgd-flag wgd-flag--cloud">
                 <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
                 <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
               </g>
             </g>
-            <path class="wgd-mflash wgd-t1" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
-            <path class="wgd-mflash wgd-t2" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
-            <path class="wgd-mflash wgd-t4" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
-            <path class="wgd-mflash wgd-t5" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g class="wgd-tray">
+              <circle class="wgd-socket" cx="5"  cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="13" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="21" cy="28" r="2.4"/>
+              <circle class="wgd-socket" cx="29" cy="28" r="2.4"/>
+              <circle class="wgd-pip wgd-pip--q1" cx="5"  cy="28" r="2.9"/>
+              <circle class="wgd-pip wgd-pip--q2" cx="13" cy="28" r="2.9"/>
+              <circle class="wgd-pip wgd-pip--q3" cx="21" cy="28" r="2.9"/>
+            </g>
+            <path class="wgd-mflash wgd-mflash--cloud" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
 
           <!-- ================= The Academy agent, four times =============
@@ -700,14 +621,20 @@ async def main() -> None:
           <circle class="wgd-port" cx="609" cy="180" r="4.5"/>
           <circle class="wgd-port" cx="609" cy="386" r="4.5"/>
 
-          <!-- Step 3: the cloud agent reasoning. A halo on the agent box, not
-               on the container — the reasoning belongs to the component. Twice
-               per cycle: once over the two readings, once over what comes back
-               from HPC, which is the loop closing. Two stacked halos rather
-               than two animations on one, because both would be infinite and
-               the later one would win forever. -->
-          <rect class="wgd-think wgd-t3a" x="604" y="349" width="162" height="74" rx="14"/>
-          <rect class="wgd-think wgd-t3b" x="604" y="349" width="162" height="74" rx="14"/>
+          <!-- The cloud agent reasoning. A halo on the agent box, not on the
+               container — the reasoning belongs to the component.
+
+               THIS IS WHY THE QUEUE EXISTS, so it is now one long window
+               rather than two short ones. It comes up as the first message
+               lands and stays up until the batch is collected: the second and
+               third messages arrive and wait because the agent that would take
+               them is busy. Pull the halo off that window and the accumulation
+               has no cause and the figure is back to showing arbitrary
+               traffic. There is exactly one halo element now, because one
+               window needs one element; two stacked rects with two delays was
+               how two separate windows used to be drawn without hitting the
+               duplicated-`animation-name` trap. Geometry unchanged. -->
+          <rect class="wgd-think" x="604" y="349" width="162" height="74" rx="14"/>
 
           <!-- ================= Messages: letters =========================
                One per hop. Each is a real <g> — an envelope — carried along
@@ -722,40 +649,67 @@ async def main() -> None:
                whole thing stays inside the existing .is-running and
                reduced-motion gating without either of them changing.
 
-               The four routes are in CSS section 9b rather than here, because
+               The six routes are in CSS section 9b rather than here, because
                offset-path is a CSS property and there is nowhere else for them
-               to live. They are the same four routes as before: each leaves an
-               agent box, crosses its dashed boundary, passes through the
-               sender's mailbox, the rail and the receiver's mailbox, and
-               crosses back in through the receiver's dashed boundary.
+               to live. Each leaves an agent box, crosses its dashed boundary,
+               passes through the sender's mailbox, the rail and the receiver's
+               mailbox, and crosses back in through the receiver's dashed
+               boundary.
+
+               There are six rather than four because fixing the flash to
+               receiver-only would otherwise have left the instrument and the
+               data store dark all cycle — on the old schedule they only sent.
+               The two new routes are h1 and h2 REVERSED, character for
+               character. No new geometry: the reversal is the same path read
+               the other way, so it lands on the same wires and the same
+               mailbox centres, and --wgd-stop comes out at exactly the two
+               values the forward routes already use.
 
                Each letter is posted into the receiving mailbox part-way along
                — --wgd-stop is how far along its own route that mailbox sits —
-               and waits there, out of sight, while that mailbox's flag is up.
-               The pause is the content: the mailbox holds the message until
-               the agent collects it.
+               and waits there, out of sight, while that mailbox's flag is up
+               and its pips are lit. The pause is the content, and in v8 it is
+               the long pause on the three letters queued at the cloud that
+               carries the whole idea: they are posted at 1.6s, 4.1s and 6.6s
+               and none of them is collected until 11.0s.
 
                Authored centred on (0,0) so the envelope's own centre is what
                rides the path, and so the flutter rotates about its middle. -->
-          <g class="wgd-letter wgd-letter--h1 wgd-t1">
+
+          <!-- into the cloud: three arrivals that queue -->
+          <g class="wgd-letter wgd-letter--h1">
             <g class="wgd-flutter">
               <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
               <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
             </g>
           </g>
-          <g class="wgd-letter wgd-letter--h2 wgd-t2">
+          <g class="wgd-letter wgd-letter--h2">
             <g class="wgd-flutter">
               <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
               <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
             </g>
           </g>
-          <g class="wgd-letter wgd-letter--h4 wgd-t4">
+          <g class="wgd-letter wgd-letter--h3">
             <g class="wgd-flutter">
               <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
               <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
             </g>
           </g>
-          <g class="wgd-letter wgd-letter--h5 wgd-t5">
+
+          <!-- out of the cloud: three dispatches, one keyframe, three delays -->
+          <g class="wgd-letter wgd-letter--h4 wgd-to-hpc">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
+          <g class="wgd-letter wgd-letter--h5 wgd-to-store">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
+          <g class="wgd-letter wgd-letter--h6 wgd-to-instr">
             <g class="wgd-flutter">
               <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
               <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
@@ -887,29 +841,204 @@ async def main() -> None:
         one of the four that reasons. Nothing reasons at the centre &mdash; the
         element in the middle is the exchange, which holds one mailbox per agent
         and only carries messages. Each mailbox is drawn as a curbside mailbox
-        with a flag, and the flag carries state rather than decoration: it is
-        raised while a letter is waiting in that mailbox and lowered once the
-        receiving agent has collected it. Academy's mailboxes are persistent, so
-        a message sent to an agent that is not there to take it waits in that
+        with a flag, and beneath it a tray of four marks. Both carry state
+        rather than decoration: the flag is raised whenever at least one message
+        is waiting in that mailbox, and one mark in the tray lights for each
+        message waiting, so a mailbox holding three of the four it has room for
+        shows three lit marks and one empty. Academy's mailboxes are persistent,
+        so a message sent to an agent that is not there to take it waits in that
         agent's mailbox until it returns. Messages travel as letters between the
         agent boxes, crossing the dashed boundaries on the way out and again on
         the way in, and every hop is routed through the exchange: each letter is
-        posted into the receiving agent's mailbox, waits there with the flag up,
-        and is then collected. The order of the discovery cycle, which repeats
-        without stopping, is: one, the instrument agent publishes a reading; two,
-        the data store agent adds historical context; three, the cloud agent
-        reasons over both and picks what to try next; four, the HPC agent runs
-        the simulation; five, the result returns to the cloud agent and the loop
-        closes. In this cycle the instrument and the data store only send, so
-        their flags stay down. The four
+        posted into the receiving agent's mailbox, waits there, and is then
+        collected. The cycle repeats without stopping. Three messages arrive at
+        the cloud agent's mailbox in turn &mdash; from the instrument, then the
+        data store, then the HPC facility &mdash; and they queue there, the
+        count rising to three, because the cloud agent is the one that reasons
+        and is busy reasoning while they arrive. When it finishes it collects
+        all three as a batch, and then sends work back out to the HPC facility,
+        the data store and the instrument in turn; each of those three collects
+        its own message, and the exchange is briefly quiet before the cycle
+        begins again. The four
         placements, and the single reasoning agent among three micro-services,
         follow the project's experiences paper,
         <cite>Patterns and Experiences from Deploying Agents in Scientific
         Applications</cite>.
       </p>
     </figure>
+  </div>
+</section>
 
-    <h3 class="year-heading">How a message gets there</h3>
+<section class="section section--ruled code-bands-section">
+  <div class="container">
+    <div class="code-bands">
+
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">01</span>
+          <h2>Define an agent</h2>
+          <p>
+            An agent is a class. <code>@action</code> methods can be invoked
+            remotely by users or by peer agents; <code>@loop</code> methods run
+            the agent's autonomous control loops until shutdown.
+          </p>
+          <p>
+            State lives on the instance and persists across invocations, so an
+            agent can hold a model, a queue, or a live connection to an
+            instrument rather than rebuilding it per call.
+          </p>
+        </div>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Defining an agent</span>
+            </div>
+{% highlight python %}
+import asyncio
+from academy.agent import Agent, action, loop
+
+
+class SensorMonitorAgent(Agent):
+    def __init__(self) -> None:
+        super().__init__()
+        self.last_reading: float | None = None
+        self.process_threshold: float = 1.0
+
+    @action
+    async def get_last_reading(self) -> float | None:
+        return self.last_reading
+
+    @loop
+    async def monitor(self, shutdown: asyncio.Event) -> None:
+        # read_sensor_data and process_reading are yours to supply.
+        while not shutdown.is_set():
+            value = await read_sensor_data()
+            self.last_reading = value
+            if value >= self.process_threshold:
+                await process_reading(value)
+            await asyncio.sleep(1)
+{% endhighlight %}
+          </div>
+        </div>
+      </div>
+
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">02</span>
+          <h2>Let agents call each other</h2>
+          <p>
+            Agents hold <em>handles</em> to other agents and invoke their actions
+            directly. Pass a handle in at construction and a coordinator can
+            delegate work without knowing where the other agents are running.
+          </p>
+          <p>
+            Communication is asynchronous throughout: handles send messages to a
+            mailbox managed by an exchange.
+          </p>
+        </div>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Agent-to-agent calls</span>
+            </div>
+{% highlight python %}
+from __future__ import annotations
+
+from academy.agent import Agent, action
+from academy.handle import Handle
+
+
+class Lowerer(Agent):
+    @action
+    async def lower(self, text: str) -> str:
+        return text.lower()
+
+
+class Coordinator(Agent):
+    def __init__(self, lowerer: Handle[Lowerer]) -> None:
+        super().__init__()
+        self.lowerer = lowerer
+
+    @action
+    async def process(self, text: str) -> str:
+        return await self.lowerer.lower(text)
+{% endhighlight %}
+          </div>
+        </div>
+      </div>
+
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">03</span>
+          <h2>Run it anywhere</h2>
+          <p>
+            Swap the exchange and the executor; the agent code does not change.
+            A thread pool and a local exchange for development; a process pool
+            and Redis across nodes; a Globus-backed cloud exchange across
+            institutions.
+          </p>
+          <p>
+            Each exchange has its own prerequisites, so
+            <a href="{{ '/start/#exchanges' | relative_url }}">check what you need to provide</a>
+            before picking one.
+          </p>
+        </div>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Distributing across nodes</span>
+            </div>
+{% highlight python %}
+from concurrent.futures import ProcessPoolExecutor
+
+from academy.exchange import RedisExchangeFactory
+from academy.manager import Manager
+
+
+async def main() -> None:
+    async with await Manager.from_exchange_factory(
+        factory=RedisExchangeFactory('<REDIS HOST>', port=6379),
+        executors=ProcessPoolExecutor(max_workers=4),
+    ) as manager:
+        ...
+{% endhighlight %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="band-next">
+      <a class="button button--secondary" href="{{ '/start/' | relative_url }}">Run these locally &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled" id="architecture">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Architecture</span>
+      <h2 class="section-title">How Academy fits together</h2>
+      <p class="section-lead">
+        Two planes: the exchange moves messages between agents, and the executor
+        decides where an agent actually runs. Keeping them separate is what lets
+        the same agent code work on a laptop and across federated research
+        infrastructure, and it is why mailboxes persist &mdash; agents behind a
+        batch queue spend much of their life offline.
+      </p>
+    </div>
+
+    {%- comment -%}
+      NO HEADING ABOVE THIS FIGURE either. It had one — "How a message gets
+      there" — which named what the drawing shows, above a drawing that already
+      carries the paper's own caption, under a section titled "How Academy fits
+      together" and a lead that already says what the two planes are. Four
+      framings of one figure.
+
+      The lead also carried a sentence pointing at the vision figure over in
+      #why. That went with it: it was signposting between two figures the
+      reader can tell apart without help.
+    {%- endcomment -%}
 
     <figure class="arch-figure">
       <div class="arch-figure__media">
@@ -929,33 +1058,27 @@ async def main() -> None:
       </figcaption>
     </figure>
 
-    <div class="arch-split">
-      <div class="arch-split__text">
-        <h3 class="year-heading">Agents, mailboxes, and executors</h3>
-        <p>
-          An agent is a Python class holding four things: <strong>actions</strong>
-          other agents can invoke, <strong>control loops</strong> that run on
-          their own, <strong>handles</strong> to its peers, and
-          <strong>state</strong> that persists across both.
-        </p>
-        <p>
-          Above the agents, the exchange gives each participant a mailbox.
-          Mailboxes are persistent, so a message sent to an agent that is
-          offline waits until it comes back. Agents behind a batch queue spend
-          much of their life offline.
-        </p>
-        <p>
-          Below them, executors place the agent process. Because the two planes
-          are independent, <em>where</em> an agent runs is decided separately
-          from <em>how</em> it is reached.
-        </p>
-        <p>
-          <a href="{{ '/blog/2026-05-logging.html' | relative_url }}">
-            Read how this is instrumented for observability &rarr;
-          </a>
-        </p>
-      </div>
+    {%- comment -%}
+      There used to be an "Agents, mailboxes, and executors" column here, and
+      it was cut because nearly all of it was said better somewhere else on the
+      page:
 
+        - "an agent is a Python class holding four things" — code band 01 says
+          this in prose AND shows it in code; band 02 covers handles.
+        - "the exchange gives each participant a mailbox … persistent, so a
+          message to an offline agent waits" — the figure in #why now draws
+          exactly this, queue and all, and band 02 already names the mailbox.
+        - "because the two planes are independent, WHERE an agent runs is
+          decided separately from HOW it is reached" — that is the section
+          lead, restated four paragraphs after the lead.
+
+      Two things in it were NOT said anywhere else and were rescued rather than
+      dropped: the batch-queue line, which is the most concrete justification
+      on the page for why mailboxes have to persist, is now in the lead; and
+      the observability link, which now closes the comparison list below.
+    {%- endcomment -%}
+
+    <div class="arch-split arch-split--single">
       <div class="arch-split__map">
         <h3 class="year-heading">If you already use Parsl or LangGraph</h3>
         <dl class="dl-list">
@@ -985,6 +1108,12 @@ async def main() -> None:
             </dd>
           </div>
         </dl>
+
+        <p class="arch-split__more">
+          <a href="{{ '/blog/2026-05-logging.html' | relative_url }}">
+            Read how this is instrumented for observability &rarr;
+          </a>
+        </p>
       </div>
     </div>
   </div>
