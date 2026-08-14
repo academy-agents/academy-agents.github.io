@@ -1,0 +1,51 @@
+# Header navigation. Items with a full URL are treated as external.
+# `match` marks the item current for any page whose URL contains that fragment.
+main:
+  # No "Architecture" entry: it only scrolls to a diagram, which does not carry
+  # enough content to earn a slot in the nav. The section still sits in the
+  # home-page flow. Give it a nav slot again if it ever becomes its own page.
+  # "Examples" read as a gallery of applications; the page is a quickstart.
+  - title: Get started
+    url: /start/
+    match: /start/
+  - title: Publications
+    url: /publications/
+    match: /publications/
+  - title: Team
+    url: /team/
+    match: /team/
+  - title: News & blog
+    url: /blog/
+    match: /blog/
+  - title: Documentation
+    url: https://docs.academy-agents.org/stable/
+
+footer:
+  - title: Project
+    items:
+      - title: Documentation
+        url: https://docs.academy-agents.org/stable/
+      - title: Get started
+        url: /start/
+      - title: GitHub
+        url: https://github.com/academy-agents
+
+  - title: Research
+    items:
+      - title: Publications
+        url: /publications/
+      - title: Team
+        url: /team/
+      - title: Paper (arXiv)
+        url: https://arxiv.org/abs/2505.05428
+
+  - title: Community
+    items:
+      - title: News & blog
+        url: /blog/
+      - title: Slack
+        url: https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA
+      - title: Tutorial repository
+        url: https://github.com/academy-agents/academy-tutorial
+      - title: RSS feed
+        url: /feed.xml

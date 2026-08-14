@@ -1,0 +1,207 @@
+# Applications built on Academy, shown at /#case-studies.
+#
+# SCOPE: only applications the FGCS experiences paper marks Production or
+# Finished appear here. The five In-Progress ones (NOAA weather forecasting,
+# CASCADE surrogate training, StructBioReasoner v2, SPLASH tritium breeding,
+# DeepDriveMD) are deliberately held back until they advance — presenting
+# in-progress work as deployed is the kind of thing a reader notices later.
+#
+# SOURCES: `source.url` is a public paper, rendered as a link on the tile.
+# Entries without one simply show no link — four of them are described only in
+# the FGCS experiences paper, which is not yet on arXiv. Each carries a
+# commented-out `source:` block; uncomment it and fill in the arXiv ID once the
+# preprint posts.
+#
+# PUBLISHING ORDER: the site should not go live ahead of that preprint, or it
+# becomes the first public disclosure of this material.
+#
+# FIGURES: any entry with a `figure` becomes a slide in the carousel above the
+# application grid. StructBioReasoner deliberately has none — see its comment. Figures live in
+# assets/images/case-studies/ and were converted from the paper's PDFs. They
+# sit on a light card in both themes because they are drawn on white; that is
+# deliberate, not a theming bug. `figure_alt` is required — it describes the
+# flow in words for anyone who cannot see the diagram.
+
+- title: Disease surveillance for early outbreak intelligence
+  system: "PDX — Preparedness Data Exchange"
+  figure: /assets/images/case-studies/pdx-monitor.webp
+  figure_alt: >-
+    Three agents in sequence. A Monitor agent polls a surveillance API, detects
+    new signals and classifies them, then sends a disease alert message to a
+    Review agent, which applies a historical measure, estimates severity and
+    classifies the notification scope. It passes severity and scope to a
+    Notification agent, which launches alerts via communication channels.
+  institution: World Health Organization African region
+  domain: Epidemiology
+  stage: Production
+  body: >-
+    Three cooperating agents run the surveillance pipeline. A Monitor
+    agent polls a remote disease-surveillance API and classifies newly detected
+    signals; a Review agent evaluates each alert against recent surveillance
+    activity, estimating severity and geographic scope; a Notification agent
+    routes the result to the relevant entities.
+  scale: "3 agents · 3 nodes · federated"
+  # Add the source once the experiences paper is on arXiv:
+  # source:
+  #   title: "Patterns and Experiences from Deploying Agents in Scientific Applications"
+  #   url: https://arxiv.org/abs/XXXX.XXXXX
+
+- title: Plant phenotyping at exascale
+  system: "OPAL"
+  figure: /assets/images/case-studies/opal.webp
+  figure_alt: >-
+    Two boxed regions side by side: AWS Cloud on Kubernetes, and OLCF Frontier.
+    In the AWS box a Scientist works through a ChainLit interface with a
+    Co-scientist agent to co-design a structured analysis plan and validate it.
+    The plan crosses to a Compute agent in the Frontier box, which stages data
+    from the APPL lab to Lustre, runs the analysis, extracts phenotype traits,
+    and returns traits and provenance back across the boundary.
+  institution: Oak Ridge National Laboratory
+  domain: Botany
+  # OPAL is the agentic application; APPL is the facility it runs against.
+  # The paper expands APPL, not OPAL — do not merge the two names.
+  stage: Production
+  body: >-
+    A multi-week APPL campaign images more than 10,000 plants across eight
+    modalities, producing terabytes of data. A conversational Co-scientist agent
+    on AWS builds a structured analysis plan with the scientist, then messages a
+    Compute agent on Frontier, which stages the data and runs analysis through
+    Parsl. Splitting the two keeps the co-scientist reachable while the compute
+    agent works behind the batch scheduler.
+  scale: "AWS to Frontier (OLCF) · federated"
+  source:
+    title: "An Agentic AI Framework to Accelerate Scientific Discovery in Plant Phenotyping"
+    url: https://arxiv.org/abs/2606.31831
+
+- title: Designing binders for undruggable proteins
+  system: StructBioReasoner
+  # No figure: both structbio_v1.pdf and structbio_v2.pdf in the paper are draft
+  # iterations of the SAME diagram, and it depicts SBR2 — the In-Progress version
+  # (5 nodes / 20 GPUs, commercial coding harness), not the v1 three-tier design
+  # described below. The paper's own caption labels it "SBR2". Using it here
+  # would illustrate a Production entry with an In-Progress architecture.
+  institution: Argonne National Laboratory
+  domain: Biology
+  stage: Production
+  body: >-
+    Intrinsically disordered proteins lack a stable fold, so conventional
+    structure-based drug design has nothing to target. A Supervisor agent launches
+    parallel Director agents onto remote HPC systems, each targeting a different
+    potential interface; Directors launch sub-agents to manage tool calls, and
+    each individual call runs as a stateless function.
+  result: >-
+    Of 787 designed and validated candidates for Der f 21, over 50% outperformed
+    the human-designed reference binders. In production it screened 11 million
+    potential binders.
+  scale: "50 agents · 2,000 nodes"
+  source:
+    title: "Scalable Agentic Reasoning for Designing Biologics Targeting IDPs (PASC '26)"
+    url: https://doi.org/10.1145/3815572.3815764
+  # The 787-candidate figure is from the public PASC paper; the 50-agent /
+  # 2,000-node / 11M figure is from the FGCS paper (main.tex:513) and is not in
+  # the public paper. Note the FGCS applications table says 125 agents rather
+  # than 50 — reconcile before the preprint posts.
+
+- title: Drug design for cancer treatment
+  system: Chelator design
+  figure: /assets/images/case-studies/chelator.webp
+  figure_alt: >-
+    Four layers. A GenAI layer generates hypotheses and molecules; an experiment
+    layer of manager agents runs surrogate and physics tests; an evaluator layer
+    of DFT, surrogate, and Architector workers computes properties; an optimizer
+    layer chooses between cheap and high-quality physics, feeding results back
+    down the stack.
+  institution: Argonne National Laboratory
+  domain: Medicine
+  stage: Production
+  body: >-
+    Experiment manager agents use an LLM with a retrieval pipeline to hypothesize
+    what makes a good chelator, a molecular generation model to propose molecules
+    consistent with those hypotheses, and a fast physics code to screen them.
+    Optimizer agents then evaluate promising candidates against an increasingly
+    expensive panel of physics codes, and feed the results back to improve the
+    surrogate, and through it the next round of hypotheses.
+  scale: "9 agents · 9 nodes"
+  # Add the source once the experiences paper is on arXiv:
+  # source:
+  #   title: "Patterns and Experiences from Deploying Agents in Scientific Applications"
+  #   url: https://arxiv.org/abs/XXXX.XXXXX
+
+- title: A general-purpose scientific assistant
+  system: "AISAC — AI Scientific Assistant Core"
+  figure: /assets/images/case-studies/aisac.webp
+  figure_alt: >-
+    A centralized LangGraph harness — a router, driver, and helper units, and an
+    evaluator with a feedback loop — reaching outward through an MCP server
+    acting as an Academy exchange bridge to federated partner agents running on
+    ALCF Aurora and NERSC Perlmutter.
+  institution: Argonne National Laboratory
+  domain: General
+  stage: Production
+  body: >-
+    AISAC centralizes its reasoning in a single planning workflow, then reaches
+    distributed resources by calling specialized agents over the Academy exchange
+    through an MCP server. Academy carries that traffic over its own
+    authenticated exchange, because serving an MCP endpoint inside those
+    facilities is difficult or prohibited. Teams wrap their components as agents and AISAC
+    coordinates across them.
+  scale: "Aurora (ALCF) and Perlmutter (NERSC) · federated"
+  # Add the source once the experiences paper is on arXiv:
+  # source:
+  #   title: "Patterns and Experiences from Deploying Agents in Scientific Applications"
+  #   url: https://arxiv.org/abs/XXXX.XXXXX
+  # Do NOT cite arXiv:2511.14043 here. That paper describes AISAC but never
+  # mentions Academy (verified), so citing it as evidence of the integration
+  # would misrepresent it. The integration is documented only in the FGCS paper.
+
+- title: Electrolyte design for organic batteries
+  system: Electrolyte design
+  figure: /assets/images/case-studies/electrolyte.webp
+  figure_alt: >-
+    A planner at the top generates N search directions, one per agent, to
+    diversify the forest and avoid overlapping exploration. Below it, N
+    Experimenter agents run in parallel, each holding a differentiated prompt,
+    its own simulation tools, and a GPT-OSS and LangGraph stack. Arrows run in
+    both directions between every Experimenter and a single shared blackboard.
+  institution: Argonne National Laboratory
+  domain: Materials science
+  stage: Finished
+  body: >-
+    An agent forest in which Experimenter agents propose molecules against
+    competing design criteria and run simulations to calculate their properties.
+    Each is launched with a different search direction and they collaborate by
+    reading and writing to a shared blackboard.
+  result: >-
+    LLM-driven search proved more sample-efficient than screening,
+    finding better molecules from far fewer simulations. Adding agents did not
+    speed it up proportionally, though, and collaboration between them degraded
+    as their number grew.
+  scale: "32 agents · 2 nodes"
+  # Add the source once the experiences paper is on arXiv:
+  # source:
+  #   title: "Patterns and Experiences from Deploying Agents in Scientific Applications"
+  #   url: https://arxiv.org/abs/XXXX.XXXXX
+
+- title: Federating the Co-Scientist
+  system: Federated Co-Scientist
+  figure: /assets/images/case-studies/co-scientist.webp
+  figure_alt: >-
+    Four labelled zones. A Literature zone harvests papers from S2, OpenAlex and
+    arXiv into a research vector database. A Team Stage where a TeamCoordinator
+    drives hypothesis generation, parallel Review agents that score and critique
+    ideas, and a HypothesisRefiner, all pulling RAG context from that database.
+    A Ranking zone runs a tournament that ranks, deduplicates and grounds
+    hypotheses in the literature, feeding refinements back into the team stage.
+  institution: "Argonne National Laboratory / University of Chicago"
+  domain: General
+  stage: Finished
+  body: >-
+    Instead of one monolithic AI collaborator, the system splits decision-making
+    across separate agents, each deployed where its work is: next to
+    instrumentation, in HPC facilities, beside data stores, or in the cloud for
+    cross-site synthesis. A Provenance agent makes the outer loop introspectable,
+    so it is possible to ask where and when a hypothesis was discarded.
+  scale: "10 agents · 7 nodes · federated"
+  source:
+    title: "Beyond Centralized Labs: Federating the Co-Scientist (SCA/HPCAsia '26)"
+    url: https://doi.org/10.1145/3784828.3786262

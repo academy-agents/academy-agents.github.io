@@ -1,0 +1,57 @@
+---
+layout: default
+---
+<div class="page-header">
+  <div class="container">
+    <a class="back-link" href="{{ '/blog/' | relative_url }}">
+      <span aria-hidden="true">&larr;</span> News &amp; blog
+    </a>
+    <h1>{{ page.title }}</h1>
+    <div class="page-header__meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+      {%- if page.author %}
+      <span aria-hidden="true">&middot;</span>
+      <span>{{ page.author }}</span>
+      {%- endif %}
+      {%- if page.location %}
+      <span aria-hidden="true">&middot;</span>
+      <span>{{ page.location }}</span>
+      {%- endif %}
+    </div>
+  </div>
+</div>
+
+<article class="container">
+  <div class="prose">
+    {%- comment -%}
+      Link posts carry no body — they point at a PDF or an external event page.
+      Their permalink still exists (the feed and sitemap reference it), so give
+      it real content rather than an empty shell.
+    {%- endcomment -%}
+    {%- assign body = content | strip -%}
+    {%- if page.external_url %}
+      {%- if body != '' %}
+        {{ content }}
+      {%- elsif page.summary %}
+      <p>{{ page.summary }}</p>
+      {%- endif %}
+      <p>
+        <a class="button button--primary"
+           href="{% if page.external_url contains '://' %}{{ page.external_url }}{% else %}{{ page.external_url | relative_url }}{% endif %}"
+           {%- if page.external_url contains '://' %} rel="noopener"{% endif %}>
+          {{ page.link_text | default: "Open the linked page" }}
+        </a>
+      </p>
+    {%- else %}
+      {{ content }}
+    {%- endif %}
+  </div>
+
+  <div class="post-footer">
+    <p>
+      Questions or ideas? Join the discussion on
+      <a href="{{ site.links.slack }}" rel="noopener">Slack</a>,
+      or browse <a href="{{ '/blog/' | relative_url }}">all news and blog posts</a>.
+    </p>
+  </div>
+</article>

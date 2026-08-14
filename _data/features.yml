@@ -1,0 +1,31 @@
+# The "What Academy provides" list on the home page.
+#
+# Source: the "Why Academy?" section of the academy-agents/academy README.
+# This replaced six generic marketing cards whose body text restated their own
+# heading — keep new entries concrete for the same reason.
+- title: Stateful agents
+  body: >-
+    Agents keep their data between invocations, so a long-running process
+    carries context from one step to the next instead of rebuilding it.
+
+- title: Agent autonomy
+  body: >-
+    Control loops run inside the agent, so it can react to events and start
+    work without the submitting process being involved.
+
+- title: Flexible deployment
+  body: >-
+    Academy handles launching agents, addressing them, and routing messages
+    between them, so one application can span a laptop, a cluster behind a
+    batch scheduler, and a machine at another institution.
+
+- title: Asynchronous by default
+  body: >-
+    Actions and inter-agent messaging are non-blocking end to end, so agents
+    coordinate without serializing on the slowest participant.
+
+- title: A small set of primitives
+  body: >-
+    The primitives are deliberately small: agents, handles, an exchange, an
+    executor. Academy imposes no coordination pattern of its own, so what you
+    build is not limited to the shapes a chat-oriented framework supports.

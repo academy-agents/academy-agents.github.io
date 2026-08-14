@@ -1,0 +1,92 @@
+# --- Site identity -----------------------------------------------------------
+title: Academy
+tagline: Federated Agentic Systems
+# Wording taken from the academy-agents/academy README, so the site and the
+# repository describe the project identically.
+description: >-
+  Modular and extensible middleware for building and deploying stateful,
+  autonomous agents across distributed systems and federated research
+  infrastructure.
+url: https://academy-agents.org
+baseurl: ""
+lang: en
+
+# --- Project links -----------------------------------------------------------
+# Referenced throughout the templates as {{ site.links.docs }} etc., so a URL
+# only ever needs changing here.
+links:
+  docs: https://docs.academy-agents.org/stable/
+  github: https://github.com/academy-agents
+  github_repo: https://github.com/academy-agents/academy
+  tutorial_repo: https://github.com/academy-agents/academy-tutorial
+  slack: https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA
+  paper: https://arxiv.org/abs/2505.05428
+  releases: https://github.com/academy-agents/academy/releases
+  issues: https://github.com/academy-agents/academy/issues
+  faq: https://docs.academy-agents.org/stable/faq/
+  contributing: https://github.com/academy-agents/academy/blob/main/docs/contributing.md
+  license: https://github.com/academy-agents/academy/blob/main/LICENSE
+
+install_command: pip install academy-py
+
+# Facts shown in the hero strip and footer. Sourced, not assumed:
+#   license  -> LICENSE in academy-agents/academy ("Copyright (c) 2024-Present
+#               by Globus Labs"), MIT per the GitHub API
+#   python   -> requires-python in the academy-py PyPI metadata
+#   version  -> latest release on PyPI
+# Re-check these when Academy releases; they are the facts a research software
+# engineer needs before committing to a dependency.
+project:
+  license: MIT
+  python: "3.10+"
+  version: "0.5.0"
+  copyright_entity: Globus Labs
+
+# Shown in the footer.
+copyright_holder: University of Chicago
+copyright_start_year: 2025
+
+google_analytics: G-5Z3E6SEPND
+
+# --- Build -------------------------------------------------------------------
+# New posts land at /blog/<year>/<month>/<slug>/. The three posts migrated from
+# the old hand-written site pin their original permalink in front matter so
+# existing links keep working.
+permalink: /blog/:year/:month/:title/
+
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: feed.xml
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: ""
+    values:
+      layout: page
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - README.md
+  - .github
+  - bin        # build scripts, not site content
+  - docs       # internal specs, not site content

@@ -1,0 +1,118 @@
+# People listed at /team/.
+#
+# Selected from the Academy commit record and the two Academy-specific papers —
+# deliberately NOT from the FGCS experiences paper, which is a community paper
+# and includes researchers from other groups who are not Academy developers.
+#
+# STILL NEEDED: roles for everyone except the two PIs, and two affiliations.
+#
+# PHOTOS are each person's own GitHub avatar — self-published, and already tied
+# to their contribution to this repo. That is a defensible source; scraping
+# institutional headshots is not, since those are owned by the photographer or
+# the institution. Still worth a courtesy "ok to use your GitHub picture?".
+# Ian Foster's photo was supplied by the team. The rest are GitHub avatars.
+# Alok Kamatar has no photo and falls back to an initial (his GitHub picture is
+# a generated identicon) — send a headshot to fill that in.
+#
+# AFFILIATIONS marked "from his GitHub profile" are sourced. Two are inferred
+# and flagged as such. Profiles go stale — confirm before deploying.
+#
+# FIELDS
+#   name         required — the only field that must be filled
+#   role         e.g. "Principal investigator", "Maintainer", "Core developer"
+#   affiliation  institution, as the person themselves states it
+#   url          personal or institutional page (optional)
+#   github       handle, rendered as a link (optional)
+#   avatar       path under /assets/images/team/ — omit and the card falls back
+#                to an initial in a circle, which is a fine interim state
+#
+# PHOTOS
+#   Square, at least 200×200 (rendered at 72px, so this covers retina).
+#   Save as assets/images/team/<firstname-lastname>.webp
+#   Convert with:  magick in.jpg -resize 400x400^ -gravity center -extent 400x400 \
+#                    -strip -quality 86 assets/images/team/name.webp
+#   Get the person's consent before publishing their photo.
+#
+# ORDER
+#   Principal investigators first, then by contribution to the codebase.
+#   Reorder freely — the template renders this list as-is.
+
+- name: Ian Foster
+  role: Principal investigator
+  # Inferred, not sourced from his GitHub profile (which has no company field).
+  # Widely published affiliation; confirm the exact wording he prefers.
+  affiliation: University of Chicago / Argonne National Laboratory
+  github: ianfoster
+  # Supplied by the team, not taken from GitHub (his avatar there is a dog on a
+  # laptop). Native 250x250 — not upscaled to 400 like the others, since
+  # upscaling would only soften it and 250 already covers the 72px render.
+  avatar: /assets/images/team/ian-foster.webp
+
+- name: Kyle Chard
+  role: Principal investigator
+  affiliation: University of Chicago / Argonne National Laboratory   # from his GitHub profile
+  github: kylechard
+  avatar: /assets/images/team/kyle-chard.webp
+
+- name: Greg Pauloski
+  role: ""            # 266 commits to academy — by far the largest contributor
+  # His GitHub profile says NVIDIA; he authored the IPDPS paper from UChicago.
+  # Using the profile value, but this is the one most likely to be wrong.
+  affiliation: NVIDIA
+  github: gpauloski
+  avatar: /assets/images/team/greg-pauloski.webp
+
+# ⚠️ CONFIRM THIS NAME BEFORE PUBLISHING.
+# The account `AK2000` has no display name and a masked email, so GitHub cannot
+# confirm the identity. It is almost certainly Alok Kamatar — first author of the
+# IPDPS paper, named tutorial presenter on this site, and the second-largest
+# contributor (74 core + 24 tutorial + 10 extensions + 2 exchange). But
+# "almost certainly" is not good enough for a person's name on a public page.
+- name: Alok Kamatar
+  role: ""
+  # Inferred from IPDPS co-authorship with Chard and Foster — not sourced.
+  affiliation: University of Chicago
+  github: AK2000
+  # No avatar: his GitHub picture is a generated identicon, not a photo.
+
+- name: Ben Clifford
+  role: ""            # 24 commits; author of the observability post on this site
+  affiliation: ""     # <- unknown; his GitHub profile has no company field
+  github: benclifford
+  avatar: /assets/images/team/ben-clifford.webp
+
+- name: Yadu Nand Babuji
+  role: ""
+  affiliation: University of Chicago    # from his GitHub profile
+  github: yadudoc
+  avatar: /assets/images/team/yadu-babuji.webp
+
+- name: Augustus Ellerm
+  role: ""
+  affiliation: ""     # <- your call
+  github: GusEllerm
+  avatar: /assets/images/team/augustus-ellerm.webp
+
+- name: Suman Raj
+  role: ""
+  affiliation: University of Chicago    # from his GitHub profile
+  github: rajsuman31
+  avatar: /assets/images/team/suman-raj.webp
+
+# ---------------------------------------------------------------------------
+# UNDECIDED: authors of the IPDPS Academy paper with no commits to the
+# repository. Whether these belong depends on whether /team/ means "who builds
+# Academy" or "who is behind Academy". Uncomment if the latter.
+#
+# - name: Ryan Chard
+#   role: ""
+#   affiliation: ""
+#
+# - name: Mansi Sakarvadia
+#   role: ""
+#   affiliation: ""
+#
+# - name: Daniel Babnigg
+#   role: ""
+#   affiliation: ""
+# ---------------------------------------------------------------------------

@@ -1,222 +1,1006 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academy - Federated Agentic Systems</title>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5Z3E6SEPND"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-5Z3E6SEPND');
-    </script>
-    <link rel="stylesheet" href="site.css">
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <nav class="container">
-            <a href="#" class="logo"><img src="logos/logo-Academy-2025-500x200-dark-bg.png" height="80"></a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#architecture">Architecture</a></li>
-                <li><a href="#use-cases">Use Cases</a></li>
-                <li><a href="#getting-started">Get Started</a></li>
-                <li><a href='https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA'>Slack</a></li>
-                <li><a href="https://docs.academy-agents.org/stable/">Documentation</a></li>
-                <li><a href="blog/">News/Blog</a></li>
-            </ul>
-        </nav>
-    </header>
+---
+layout: default
+title: Academy
+# No `description` here on purpose: it would override _config.yml, and the two
+# drifted apart ("stateful actors and autonomous agents" vs "stateful,
+# autonomous agents") which contradicts the #model section below.
+---
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1 class="animate-fade-in">Academy</h1>
-            <p class="animate-fade-in">Modular and extensible middleware for deploying autonomous agents across federated research ecosystems, including HPC systems, experimental facilities, and data repositories.</p>
-             <a href="#getting-started" class="cta-button animate-fade-in">Get Started</a>
-            <a href="https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA" class="cta-button animate-fade-in">Join Slack</a>
+{%- comment -%}
+  Python on this page is taken from the official sources — the
+  academy-agents/academy README and docs.academy-agents.org/latest/get-started.
+
+  COPY, THEN RUN IT. An earlier version of this page copied faithfully without
+  executing, and shipped three snippets that did not run (a module-level
+  `async with`, `exchange=` for `factory=`, and `max_processes=` for
+  `max_workers=`). Verbatim copying is not a substitute for testing.
+{%- endcomment -%}
+
+<section class="hero hero--split">
+  <div class="container hero__grid">
+    <div class="hero__pitch">
+      <span class="hero__eyebrow">{{ site.tagline }}</span>
+      <h1>Autonomous agents for federated science</h1>
+
+      <p class="hero__lead">
+        Academy is middleware for building and deploying stateful agents across
+        distributed systems and federated research infrastructure. An agent is a
+        Python object that holds state, exposes actions other agents can call
+        remotely, and runs its own control loops. An LLM is one thing you can put
+        inside an agent; Academy does not require one.
+      </p>
+
+      <div class="button-row">
+        <a class="button button--primary" href="{{ '/start/' | relative_url }}">Get started</a>
+        <a class="button button--secondary" href="{{ site.links.github_repo }}" rel="noopener">View on GitHub</a>
+      </div>
+
+      <div class="hero__install">
+        <div class="code-block code-block--inline">
+          <pre><code>{{ site.install_command }}</code></pre>
         </div>
-    </section>
+        <p class="facts-strip">
+          {{ site.project.license }} license
+          <span aria-hidden="true">·</span> Python {{ site.project.python }}
+          <span aria-hidden="true">·</span> v{{ site.project.version }}
+          <span aria-hidden="true">·</span>
+          <a href="{{ site.links.releases }}" rel="noopener">release history</a>
+        </p>
+      </div>
+    </div>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <h2 class="section-title">Key Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">⚡</span>
-                    <h3>Asynchronous Execution</h3>
-                    <p>Built for high-performance scientific computing with support for asynchronous task execution and non-blocking operations across distributed resources.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔄</span>
-                    <h3>Heterogeneous Resources</h3>
-                    <p>Seamlessly integrates diverse computing resources including HPC clusters, experimental facilities, and cloud infrastructure.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">📊</span>
-                    <h3>High-Throughput Data</h3>
-                    <p>Optimized for handling massive scientific datasets with efficient data flow management and streaming capabilities.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🤖</span>
-                    <h3>Stateful Agents</h3>
-                    <p>Advanced abstractions for expressing intelligent agents with persistent state and memory across workflow executions.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔗</span>
-                    <h3>Inter-Agent Coordination</h3>
-                    <p>Sophisticated communication and coordination mechanisms enabling complex multi-agent scientific workflows.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔬</span>
-                    <h3>Experimental Integration</h3>
-                    <p>Direct integration with experimental control systems and scientific instruments for automated research workflows.</p>
-                </div>
-            </div>
+    <div class="hero__code">
+      <div class="code-block">
+        <div class="code-block__header">
+          <span>A first Academy program</span>
         </div>
-    </section>
+{% highlight python %}
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-    <!-- Use Cases Section -->
-    <section class="use-cases" id="use-cases">
-        <div class="container">
-            <h2 class="section-title">Use Cases</h2>
-            <div class="use-case-grid">
-                <div class="use-case-card">
-                    <h3>🧪 Materials Discovery</h3>
-                    <p>Deploy agents across multiple HPC systems to accelerate materials research through automated synthesis, characterization, and analysis workflows that adapt based on experimental results.</p>
-                </div>
-                <div class="use-case-card">
-                    <h3>🧠 Decentralized Learning</h3>
-                    <p>Coordinate federated machine learning across distributed research institutions while maintaining data privacy and enabling collaborative model development.</p>
-                </div>
-                <div class="use-case-card">
-                    <h3>📚 Information Extraction</h3>
-                    <p>Orchestrate intelligent agents to extract, process, and synthesize information from diverse scientific databases and literature repositories in real-time.</p>
-                </div>
-                <div class="use-case-card">
-                    <h3>🔬 Autonomous Experimentation</h3>
-                    <p>Enable self-driving laboratories with agents that can design experiments, control instruments, analyze results, and iterate hypotheses automatically.</p>
-                </div>
-                <div class="use-case-card">
-                    <h3>📊 Scientific Workflow Automation</h3>
-                    <p>Automate complex scientific pipelines spanning multiple institutions, from data collection through analysis to publication-ready results.</p>
-                </div>
-                <div class="use-case-card">
-                    <h3>🌐 Multi-Site Coordination</h3>
-                    <p>Coordinate research activities across multiple facilities, enabling large-scale collaborative science with intelligent resource allocation.</p>
-                </div>
-            </div>
+from academy.agent import Agent, action
+from academy.exchange import LocalExchangeFactory
+from academy.manager import Manager
+
+
+class ExampleAgent(Agent):
+    @action
+    async def square(self, value: float) -> float:
+        return value * value
+
+
+async def main() -> None:
+    async with await Manager.from_exchange_factory(
+        factory=LocalExchangeFactory(),
+        executors=ThreadPoolExecutor(),
+    ) as manager:
+        handle = await manager.launch(ExampleAgent())
+        assert await handle.square(2) == 4
+
+
+asyncio.run(main())
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled section--subtle" id="why">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">The problem</span>
+      <h2 class="section-title">Agentic frameworks are built for the cloud, not for research infrastructure</h2>
+    </div>
+
+    <div class="problem">
+      <blockquote class="problem__quote">
+        Existing agentic frameworks take a relatively narrow view of agents,
+        apply a centralized model, and target conversational, cloud-native
+        applications (e.g., LLM-based AI chatbots). In contrast, scientific
+        applications require myriad agents be deployed and managed across
+        diverse cyberinfrastructure.
+        <cite>Empowering Scientific Workflows with Federated Agents, IPDPS 2026</cite>
+      </blockquote>
+
+      <div class="problem__text">
+        <p>
+          Scientific work spans HPC systems, instruments, and institutions, each
+          with its own queue, network policy and identity provider. Academy is
+          the execution and coordination layer for that setting.
+        </p>
+        <p>
+          Academy is not a replacement for an LLM harness. It places agents and
+          connects them; what runs inside an agent is up to the application. An
+          agent that polls an instrument or drives a simulation needs no LLM.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled code-bands-section">
+  <div class="container">
+    <div class="code-bands">
+
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">01</span>
+          <h2>Define an agent</h2>
+          <p>
+            An agent is a class. <code>@action</code> methods can be invoked
+            remotely by users or by peer agents; <code>@loop</code> methods run
+            the agent's autonomous control loops until shutdown.
+          </p>
+          <p>
+            State lives on the instance and persists across invocations, so an
+            agent can hold a model, a queue, or a live connection to an
+            instrument rather than rebuilding it per call.
+          </p>
         </div>
-    </section>
-
-    <!-- Getting Started Section -->
-    <section class="getting-started" id="getting-started">
-        <div class="container">
-            <h2 class="section-title">Getting Started</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">
-                Deploy your first federated agentic workflow in minutes
-            </p>
-            
-            <div class="code-block">
-                <div># Install Academy</div>
-                <div>pip install academy-py</div>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Defining an agent</span>
             </div>
+{% highlight python %}
+import asyncio
+from academy.agent import Agent, action, loop
 
-            <div class="install-steps">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3>Define Your Agents</h3>
-                    <p>Create intelligent agents with custom behaviors using Academy's intuitive Python API and stateful agent abstractions.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3>Configure Resources</h3>
-                    <p>Set up connections to your HPC systems, data repositories, and experimental facilities using Academy's resource management layer.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3>Deploy &amp; Scale</h3>
-                    <p>Launch your federated workflow across distributed resources with built-in coordination, monitoring, and fault tolerance.</p>
-                </div>
-            </div>
 
-            <div style="text-align: center; margin-top: 3rem;">
-                <a href="https://docs.academy-agents.org/stable/" class="cta-button">View Documentation</a>
-            </div>
+class SensorMonitorAgent(Agent):
+    def __init__(self) -> None:
+        super().__init__()
+        self.last_reading: float | None = None
+        self.process_threshold: float = 1.0
+
+    @action
+    async def get_last_reading(self) -> float | None:
+        return self.last_reading
+
+    @loop
+    async def monitor(self, shutdown: asyncio.Event) -> None:
+        # read_sensor_data and process_reading are yours to supply.
+        while not shutdown.is_set():
+            value = await read_sensor_data()
+            self.last_reading = value
+            if value >= self.process_threshold:
+                await process_reading(value)
+            await asyncio.sleep(1)
+{% endhighlight %}
+          </div>
         </div>
-    </section>
+      </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="https://docs.academy-agents.org/stable/">Documentation</a>
-                <a href="https://github.com/academy-agents">GitHub</a>
-                <a href="https://arxiv.org/abs/2505.05428">Research Paper</a>
-                <a href="#">Examples</a>
-                <a href="https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA">Slack</a>
-            </div>
-            <p>&copy; 2025 University of Chicago.</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
-                Based on research from "Empowering Scientific Workflows with Federated Agents" (arXiv:2505.05428)
-            </p>
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">02</span>
+          <h2>Let agents call each other</h2>
+          <p>
+            Agents hold <em>handles</em> to other agents and invoke their actions
+            directly. Pass a handle in at construction and a coordinator can
+            delegate work without knowing where the other agents are running.
+          </p>
+          <p>
+            Communication is asynchronous throughout: handles send messages to a
+            mailbox managed by an exchange.
+          </p>
         </div>
-    </footer>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Agent-to-agent calls</span>
+            </div>
+{% highlight python %}
+from __future__ import annotations
 
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+from academy.agent import Agent, action
+from academy.handle import Handle
 
-        // Header background on scroll
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10, 10, 15, 0.95)';
-                header.style.backdropFilter = 'blur(30px)';
-            } else {
-                header.style.background = 'rgba(10, 10, 15, 0.8)';
-                header.style.backdropFilter = 'blur(20px)';
-            }
-        });
 
-        // Animate elements on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+class Lowerer(Agent):
+    @action
+    async def lower(self, text: str) -> str:
+        return text.lower()
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
 
-        // Observe all cards and sections
-        document.querySelectorAll('.feature-card, .use-case-card, .step-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
+class Coordinator(Agent):
+    def __init__(self, lowerer: Handle[Lowerer]) -> None:
+        super().__init__()
+        self.lowerer = lowerer
+
+    @action
+    async def process(self, text: str) -> str:
+        return await self.lowerer.lower(text)
+{% endhighlight %}
+          </div>
+        </div>
+      </div>
+
+      <div class="code-band">
+        <div class="code-band__text">
+          <span class="band-number">03</span>
+          <h2>Run it anywhere</h2>
+          <p>
+            Swap the exchange and the executor; the agent code does not change.
+            A thread pool and a local exchange for development; a process pool
+            and Redis across nodes; a Globus-backed cloud exchange across
+            institutions.
+          </p>
+          <p>
+            Each exchange has its own prerequisites, so
+            <a href="{{ '/start/#exchanges' | relative_url }}">check what you need to provide</a>
+            before picking one.
+          </p>
+        </div>
+        <div class="code-band__code">
+          <div class="code-block">
+            <div class="code-block__header">
+              <span>Distributing across nodes</span>
+            </div>
+{% highlight python %}
+from concurrent.futures import ProcessPoolExecutor
+
+from academy.exchange import RedisExchangeFactory
+from academy.manager import Manager
+
+
+async def main() -> None:
+    async with await Manager.from_exchange_factory(
+        factory=RedisExchangeFactory('<REDIS HOST>', port=6379),
+        executors=ProcessPoolExecutor(max_workers=4),
+    ) as manager:
+        ...
+{% endhighlight %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="band-next">
+      <a class="button button--secondary" href="{{ '/start/' | relative_url }}">Run these locally &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled" id="architecture">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Architecture</span>
+      <h2 class="section-title">How Academy fits together</h2>
+      <p class="section-lead">
+        Two planes: the exchange moves messages between agents, and the executor
+        decides where an agent actually runs. Keeping them separate is what lets
+        the same agent code work on a laptop and across federated research infrastructure.
+        The first figure below shows <em>where</em> agents end up and why; the
+        second shows the machinery that puts them there.
+      </p>
+    </div>
+
+    <h3 class="year-heading">Where agents live</h3>
+
+    <p class="measured vision__source">
+      Design intent, not a deployment record: the four placements, and the single
+      reasoning agent among three micro-services, follow the project's experiences
+      paper, <cite>Patterns and Experiences from Deploying Agents in Scientific
+      Applications</cite>. Instrument types are named as categories only &mdash; no
+      specific integration, and no named facility, is claimed.
+    </p>
+
+    {%- comment -%}
+      A vision diagram, not a deployment record.
+
+      THE UNIT. Every one of the four entities is the same drawing: a DASHED
+      outer boundary — a resource Academy does not own, someone else's facility,
+      instrument, trust domain, network policy, uptime — containing a SOLID box
+      that is the Academy agent. Dashed = theirs, solid = ours, and ours is
+      identical everywhere. That recurrence is the entire argument of the
+      figure, so:
+
+      1. All four entities are the SAME SIZE. No entity is special, including
+         the instrument. An earlier version enlarged and decorated it, which
+         made the *places* the subject when the point is the opposite.
+      2. The four agent boxes are one component drawn four times. They are
+         emitted as identical <g> subtrees at identical local coordinates and
+         only translated into place — if you edit one, edit all four.
+      3. The micro-service / LLM difference lives INSIDE the agent box, in the
+         kind band. Same component, different fill. Never a different box.
+      4. The exchange connects the AGENT boxes, not the containers, so every
+         message visibly crosses two dashed boundaries. That is the federation
+         claim, drawn.
+
+      THE FIGURE CARRIES ITSELF. There is no legend, no step list and no
+      caption beside this drawing any more: everything they used to say is
+      either drawn or written into #vision-desc. Two things moved rather than
+      vanished, and both must stay put.
+
+      - The order of the loop is drawn, as five numbered markers threaded onto
+        the routes themselves (1, 2, 4 and 5 on the four hops; 3 pinned to the
+        cloud agent, because step 3 is a computation and not a hop). They are
+        legible with nothing moving, which is what the reduced-motion state and
+        the scripting-off state both render.
+      - The sourcing lines are in the prose above and in #vision-desc: design
+        intent not a deployment record, categories only with no specific
+        integration claimed, and the paper by title. They are the accuracy
+        guardrail for this figure. Do not let them drift out again.
+
+      SOURCING. The four placements come from the experiences paper's
+      description of the Federated Co-Scientist ("adjacent to instrumentation
+      for low-latency control, in HPC facilities for large-scale computation,
+      beside data stores for throughput, or in the cloud for cross-site
+      coordination and synthesis"). The single reasoning agent among three
+      micro-services comes from its finding that agents span a spectrum from
+      fully LLM-driven to fully deterministic, with most applications mixing
+      the two. The paper is not yet on arXiv: cite it by title, never link it,
+      and keep its per-application counts off the page.
+
+      Also load-bearing and easy to undo by accident:
+
+      - The LLM agent is NOT at the centre. The exchange routes; the cloud agent
+        decides. Centring the reasoning agent would make the figure claim the
+        centralised architecture the project's own abstract argues against.
+      - Instruments are named at the CATEGORY level only. "a beamline", never a
+        named installation. Same for the HPC facility: no Frontier, no Aurora.
+      - The kind of each agent ("micro-service" / "LLM-driven") is written out
+        as text, not carried by colour or shape — see WCAG 1.4.1.
+      - The five instrument bubbles orbit the instrument entity and tether to
+        its boundary. They are drawn OUTSIDE it, so that entity stays exactly
+        the size of the other three, and they never stop moving while the
+        figure is on screen: motion plus connection is the content, which is
+        that the slot takes any number of capabilities.
+    {%- endcomment -%}
+
+    <figure class="vision" data-vision>
+      <div class="vision__media" tabindex="0" role="region"
+           aria-label="Where agents live, scrollable diagram">
+        <svg class="vision__svg" viewBox="0 0 820 476" role="img"
+             aria-labelledby="vision-title vision-desc" focusable="false"
+             xmlns="http://www.w3.org/2000/svg">
+          <title id="vision-title">Where agents live: the same Academy agent, placed inside four resources Academy does not own</title>
+
+          <!-- ================= The exchange: the spine ==================
+               Drawn first so wires, mailboxes and agent boxes all layer over
+               it. One mailbox per agent, and every hop is drawn entering one
+               mailbox and leaving another, because every hop really is. -->
+          <rect class="wgd-bus" x="390" y="68" width="140" height="390" rx="18"/>
+          <text class="wgd-ex"    x="460" y="100" text-anchor="middle">EXCHANGE</text>
+          <path class="wgd-rail" d="M460,150 V440"/>
+
+          <!-- ================= Tethers ===================================
+               One per instrument bubble, anchored on the instrument's own
+               dashed boundary and running out to the bubble's home point. Each
+               one draws itself out from the boundary, holds, then retracts —
+               so at any moment some are connected and some are not, which is
+               the claim: the slot takes any number of these, not five.
+
+               Drawn BEFORE the entities so the dashed boundary stays crisp on
+               top of where they land, and before the bubbles so that each
+               tether's outer end is hidden under its bubble's opaque ring. The
+               bubble orbits by less than its own radius, so the join stays
+               covered wherever the bubble happens to be. pathLength="100"
+               normalises the five lengths to one dash keyframe.
+
+               With motion off they are all drawn, full length. -->
+          <g class="wgd-tethers">
+            <path class="wgd-tether" pathLength="100" d="M170,86 Q136,60 104,48"/>
+            <path class="wgd-tether" pathLength="100" d="M140,116 Q98,101 63,100"/>
+            <path class="wgd-tether" pathLength="100" d="M140,160 Q94,157 49,160"/>
+            <path class="wgd-tether" pathLength="100" d="M140,204 Q98,219 63,221"/>
+            <path class="wgd-tether" pathLength="100" d="M170,234 Q136,260 104,272"/>
+          </g>
+
+          <!-- ================= Four entities ============================
+               Each is: a dashed boundary (theirs) + solid corner brackets so
+               the boundary reads as surveyed rather than as a weak box, a
+               name, a reason, and the agent box. Identical geometry
+               throughout; only x/y and the two strings change. -->
+
+          <!-- INSTRUMENT — top left -->
+          <g>
+            <rect class="wgd-frame" x="140" y="86" width="190" height="148" rx="14"/>
+            <path class="wgd-corner" d="M140,112 V100 Q140,86 154,86 H166
+                                        M304,86 H316 Q330,86 330,100 V112
+                                        M330,208 V220 Q330,234 316,234 H304
+                                        M166,234 H154 Q140,234 140,220 V208"/>
+            <text class="wgd-title"  x="159" y="114">INSTRUMENT</text>
+            <text class="wgd-reason" x="159" y="134">low-latency control</text>
+          </g>
+
+          <!-- DATA STORE — bottom left -->
+          <g>
+            <rect class="wgd-frame" x="140" y="292" width="190" height="148" rx="14"/>
+            <path class="wgd-corner" d="M140,318 V306 Q140,292 154,292 H166
+                                        M304,292 H316 Q330,292 330,306 V318
+                                        M330,414 V426 Q330,440 316,440 H304
+                                        M166,440 H154 Q140,440 140,426 V414"/>
+            <text class="wgd-title"  x="159" y="320">DATA STORE</text>
+            <text class="wgd-reason" x="159" y="340">throughput</text>
+          </g>
+
+          <!-- HPC FACILITY — top right. No facility is named: naming one
+               would turn a vision diagram into a deployment claim. -->
+          <g>
+            <rect class="wgd-frame" x="590" y="86" width="190" height="148" rx="14"/>
+            <path class="wgd-corner" d="M590,112 V100 Q590,86 604,86 H616
+                                        M754,86 H766 Q780,86 780,100 V112
+                                        M780,208 V220 Q780,234 766,234 H754
+                                        M616,234 H604 Q590,234 590,220 V208"/>
+            <text class="wgd-title"  x="609" y="114">HPC FACILITY</text>
+            <text class="wgd-reason" x="609" y="134">large-scale computation</text>
+          </g>
+
+          <!-- CLOUD — bottom right. The one reasoning agent. It is
+               distinguished by the fill of its kind band and by the words in
+               it, never by sitting at the centre or by being bigger. -->
+          <g>
+            <rect class="wgd-frame" x="590" y="292" width="190" height="148" rx="14"/>
+            <path class="wgd-corner" d="M590,318 V306 Q590,292 604,292 H616
+                                        M754,292 H766 Q780,292 780,306 V318
+                                        M780,414 V426 Q780,440 766,440 H754
+                                        M616,440 H604 Q590,440 590,426 V414"/>
+            <text class="wgd-title"  x="609" y="320">CLOUD</text>
+            <text class="wgd-reason" x="609" y="340">cross-site coordination</text>
+          </g>
+
+          <!-- ================= Wires =====================================
+               Always visible: with motion off, or mid-pass, the whole route
+               is still on screen. The casings are painted in the container
+               fill and notch a clean gap through the dashed boundary where a
+               wire passes through it — the wire crosses the boundary rather
+               than stopping at it. -->
+          <g class="wgd-casings">
+            <path d="M322,180 H338"/>
+            <path d="M322,386 H338"/>
+            <path d="M582,180 H598"/>
+            <path d="M582,386 H598"/>
+          </g>
+
+          <g class="wgd-wires">
+            <path d="M311,180 H396"/>
+            <path d="M311,386 H396"/>
+            <path d="M609,180 H524"/>
+            <path d="M609,386 H524"/>
+            <path d="M430,180 H460"/>
+            <path d="M490,180 H460"/>
+            <path d="M430,386 H460"/>
+            <path d="M490,386 H460"/>
+          </g>
+
+          <!-- ================= Mailboxes =================================
+               One per agent, on the side of the rail its agent sits on. Each
+               hop below passes through exactly two of them: the sender's and
+               the receiver's, and each of those incidences is a stacked
+               .wgd-mflash on the hop's own delay class. The cloud agent has
+               four because every hop in the cycle has it at one end; the HPC
+               agent has two; the instrument and the data store send once each.
+               That is what makes "one mailbox per agent, and every hop goes
+               through two of them" legible rather than asserted. -->
+          <g>
+            <rect class="wgd-mbox" x="396" y="169" width="34" height="22" rx="5"/>
+            <path class="wgd-mbox-lines" d="M404,176 H422 M404,184 H422"/>
+            <rect class="wgd-mflash wgd-t1" x="396" y="169" width="34" height="22" rx="5"/>
+          </g>
+          <g>
+            <rect class="wgd-mbox" x="396" y="375" width="34" height="22" rx="5"/>
+            <path class="wgd-mbox-lines" d="M404,382 H422 M404,390 H422"/>
+            <rect class="wgd-mflash wgd-t2" x="396" y="375" width="34" height="22" rx="5"/>
+          </g>
+          <g>
+            <rect class="wgd-mbox" x="490" y="169" width="34" height="22" rx="5"/>
+            <path class="wgd-mbox-lines" d="M498,176 H516 M498,184 H516"/>
+            <rect class="wgd-mflash wgd-t4" x="490" y="169" width="34" height="22" rx="5"/>
+            <rect class="wgd-mflash wgd-t5" x="490" y="169" width="34" height="22" rx="5"/>
+          </g>
+          <g>
+            <rect class="wgd-mbox" x="490" y="375" width="34" height="22" rx="5"/>
+            <path class="wgd-mbox-lines" d="M498,382 H516 M498,390 H516"/>
+            <rect class="wgd-mflash wgd-t1" x="490" y="375" width="34" height="22" rx="5"/>
+            <rect class="wgd-mflash wgd-t2" x="490" y="375" width="34" height="22" rx="5"/>
+            <rect class="wgd-mflash wgd-t4" x="490" y="375" width="34" height="22" rx="5"/>
+            <rect class="wgd-mflash wgd-t5" x="490" y="375" width="34" height="22" rx="5"/>
+          </g>
+
+          <!-- ================= The Academy agent, four times =============
+               One component. Identical local geometry in all four; only the
+               translate and the kind band differ. Do not restyle one of
+               these without restyling all of them — the recurrence is the
+               argument. -->
+
+          <!-- in the instrument -->
+          <g transform="translate(159,148)">
+            <rect class="wgd-agent" x="0" y="0" width="152" height="64" rx="10"/>
+            <rect class="wgd-agent-mark" x="11" y="11" width="10" height="10" rx="2.5"/>
+            <circle class="wgd-agent-core" cx="16" cy="16" r="2.4"/>
+            <text class="wgd-agent-name" x="28" y="20">ACADEMY AGENT</text>
+            <rect class="wgd-kindband" x="11" y="30" width="130" height="22" rx="5.5"/>
+            <rect class="wgd-kindmark" x="18" y="35" width="4" height="12" rx="2"/>
+            <text class="wgd-kind" x="29" y="45">micro-service</text>
+          </g>
+
+          <!-- in the data store -->
+          <g transform="translate(159,354)">
+            <rect class="wgd-agent" x="0" y="0" width="152" height="64" rx="10"/>
+            <rect class="wgd-agent-mark" x="11" y="11" width="10" height="10" rx="2.5"/>
+            <circle class="wgd-agent-core" cx="16" cy="16" r="2.4"/>
+            <text class="wgd-agent-name" x="28" y="20">ACADEMY AGENT</text>
+            <rect class="wgd-kindband" x="11" y="30" width="130" height="22" rx="5.5"/>
+            <rect class="wgd-kindmark" x="18" y="35" width="4" height="12" rx="2"/>
+            <text class="wgd-kind" x="29" y="45">micro-service</text>
+          </g>
+
+          <!-- in the HPC facility -->
+          <g transform="translate(609,148)">
+            <rect class="wgd-agent" x="0" y="0" width="152" height="64" rx="10"/>
+            <rect class="wgd-agent-mark" x="11" y="11" width="10" height="10" rx="2.5"/>
+            <circle class="wgd-agent-core" cx="16" cy="16" r="2.4"/>
+            <text class="wgd-agent-name" x="28" y="20">ACADEMY AGENT</text>
+            <rect class="wgd-kindband" x="11" y="30" width="130" height="22" rx="5.5"/>
+            <rect class="wgd-kindmark" x="18" y="35" width="4" height="12" rx="2"/>
+            <text class="wgd-kind" x="29" y="45">micro-service</text>
+          </g>
+
+          <!-- in the cloud — same box, LLM fill in the kind band -->
+          <g transform="translate(609,354)">
+            <rect class="wgd-agent" x="0" y="0" width="152" height="64" rx="10"/>
+            <rect class="wgd-agent-mark" x="11" y="11" width="10" height="10" rx="2.5"/>
+            <circle class="wgd-agent-core" cx="16" cy="16" r="2.4"/>
+            <text class="wgd-agent-name" x="28" y="20">ACADEMY AGENT</text>
+            <rect class="wgd-kindband wgd-kindband--llm" x="11" y="30" width="130" height="22" rx="5.5"/>
+            <rect class="wgd-kindmark wgd-kindmark--llm" x="18" y="35" width="4" height="12" rx="2"/>
+            <text class="wgd-kind" x="29" y="45">LLM-driven</text>
+          </g>
+
+          <!-- Where each agent meets its wire. -->
+          <circle class="wgd-port" cx="311" cy="180" r="4.5"/>
+          <circle class="wgd-port" cx="311" cy="386" r="4.5"/>
+          <circle class="wgd-port" cx="609" cy="180" r="4.5"/>
+          <circle class="wgd-port" cx="609" cy="386" r="4.5"/>
+
+          <!-- Step 3: the cloud agent reasoning. A halo on the agent box, not
+               on the container — the reasoning belongs to the component. Twice
+               per cycle: once over the two readings, once over what comes back
+               from HPC, which is the loop closing. Two stacked halos rather
+               than two animations on one, because both would be infinite and
+               the later one would win forever. -->
+          <rect class="wgd-think wgd-t3a" x="604" y="349" width="162" height="74" rx="14"/>
+          <rect class="wgd-think wgd-t3b" x="604" y="349" width="162" height="74" rx="14"/>
+
+          <!-- ================= Messages ==================================
+               One per hop, each authored in its direction of travel so a
+               single keyframe rule drives all four. pathLength="100"
+               normalises routes of very different lengths to one tempo. Every
+               route leaves an agent box, crosses its dashed boundary, passes
+               through the sender's mailbox, the rail, the receiver's mailbox,
+               and crosses back in through the receiver's dashed boundary.
+
+               The loop runs continuously: one keyframe holds the whole 11s
+               cycle and each hop takes its slot in it by animation-delay. -->
+          <path class="wgd-pulse wgd-t1" pathLength="100"
+                d="M311,180 H450 Q460,180 460,190 V376 Q460,386 470,386 H609"/>
+          <path class="wgd-pulse wgd-t2" pathLength="100"
+                d="M311,386 H609"/>
+          <path class="wgd-pulse wgd-t4" pathLength="100"
+                d="M609,386 H470 Q460,386 460,376 V190 Q460,180 470,180 H609"/>
+          <path class="wgd-pulse wgd-t5" pathLength="100"
+                d="M609,180 H470 Q460,180 460,190 V376 Q460,386 470,386 H609"/>
+
+          <!-- ================= Instrument bubbles ========================
+               Five kinds of instrument, orbiting the instrument entity on an
+               arc that wraps its outer corner — outside it, so that entity
+               stays exactly the size of the other three. Each one drifts on
+               its own small closed orbit, at its own period, so the group
+               never falls into step; each one's tether forms and fades on its
+               own phase.
+
+               All five are in the DOM at all times, and the base style of
+               every one of these animations is the informative one: five equal
+               circles at full opacity, unscaled, with all five tethers drawn.
+               That is what reduced motion renders, and what scripting-off
+               renders. The meaning of the group is plurality, so it must never
+               freeze on one.
+
+               Icons are hand-authored on a 24x24 grid to match the nav icons;
+               no icon library, which the artifact CSP would block anyway. Last
+               in the document so the hover labels layer over everything. -->
+          <g class="wgd-bubbles">
+            <g class="wgd-bub" transform="translate(104,48)">
+              <g class="wgd-bub-orbit">
+                <g class="wgd-bub-mark">
+                  <circle class="wgd-bub-ring" r="24"/>
+                  <g class="wgd-ico" transform="translate(-13.2,-13.2) scale(1.1)">
+                    <path d="M2 12h6.6"/>
+                    <path d="M9 9h6v6H9Z"/>
+                    <path d="M15.4 12h6.6M15.8 10.2 21.4 7.2M15.8 13.8 21.4 16.8"/>
+                  </g>
+                </g>
+                <g class="wgd-bub-lbl">
+                  <rect x="30" y="-13" width="76" height="26" rx="7"/>
+                  <text x="42" y="4.5">beamline</text>
+                </g>
+              </g>
+            </g>
+
+            <g class="wgd-bub" transform="translate(63,100)">
+              <g class="wgd-bub-orbit">
+                <g class="wgd-bub-mark">
+                  <circle class="wgd-bub-ring" r="24"/>
+                  <g class="wgd-ico" transform="translate(-13.2,-13.2) scale(1.1)">
+                    <path d="M4 14 6.8 16.8 18.6 7 13.8 2.2Z"/>
+                    <path d="M12.7 11.9 10.4 20.4"/>
+                    <path d="M5.4 20.8h10"/>
+                  </g>
+                </g>
+                <g class="wgd-bub-lbl">
+                  <rect x="30" y="-13" width="83" height="26" rx="7"/>
+                  <text x="42" y="4.5">telescope</text>
+                </g>
+              </g>
+            </g>
+
+            <g class="wgd-bub" transform="translate(49,160)">
+              <g class="wgd-bub-orbit">
+                <g class="wgd-bub-mark">
+                  <circle class="wgd-bub-ring" r="24"/>
+                  <g class="wgd-ico" transform="translate(-13.2,-13.2) scale(1.1)">
+                    <path d="M7 3C7 8 17 8 17 12S7 16 7 21"/>
+                    <path d="M17 3C17 8 7 8 7 12S17 16 17 21"/>
+                    <path d="M8.4 5.4h7.2M7 12h10M8.4 18.6h7.2"/>
+                  </g>
+                </g>
+                <g class="wgd-bub-lbl">
+                  <rect x="30" y="-13" width="83" height="26" rx="7"/>
+                  <text x="42" y="4.5">sequencer</text>
+                </g>
+              </g>
+            </g>
+
+            <g class="wgd-bub" transform="translate(63,221)">
+              <g class="wgd-bub-orbit">
+                <g class="wgd-bub-mark">
+                  <circle class="wgd-bub-ring" r="24"/>
+                  <g class="wgd-ico" transform="translate(-13.2,-13.2) scale(1.1)">
+                    <rect x="2" y="7.5" width="20" height="13" rx="2.5"/>
+                    <path d="M8.5 7.5 10 5h4l1.5 2.5"/>
+                    <circle cx="12" cy="14" r="3.6"/>
+                  </g>
+                </g>
+                <g class="wgd-bub-lbl">
+                  <rect x="30" y="-13" width="123" height="26" rx="7"/>
+                  <text x="42" y="4.5">imaging station</text>
+                </g>
+              </g>
+            </g>
+
+            <g class="wgd-bub" transform="translate(104,272)">
+              <g class="wgd-bub-orbit">
+                <g class="wgd-bub-mark">
+                  <circle class="wgd-bub-ring" r="24"/>
+                  <g class="wgd-ico" transform="translate(-13.2,-13.2) scale(1.1)">
+                    <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+                    <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+                  </g>
+                </g>
+                <g class="wgd-bub-lbl">
+                  <rect x="30" y="-13" width="116" height="26" rx="7"/>
+                  <text x="42" y="4.5">detector array</text>
+                </g>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <p id="vision-desc" class="visually-hidden">
+        The same Academy agent, deployed into four kinds of place that Academy
+        does not own. This is design intent, not a deployment record. Each place
+        is drawn as a dashed boundary &mdash; someone else's facility, instrument
+        or trust domain &mdash; and inside each one sits an identical solid box:
+        the Academy agent. The four places are an instrument, for low-latency
+        control; a data store, for throughput; an HPC facility, for large-scale
+        computation; and the cloud, for cross-site coordination. Five instrument
+        kinds orbit the instrument, each joined to it by a tether that forms and
+        fades: a beamline, a telescope, a sequencer, an imaging station and a
+        detector array. They stand for the capabilities that one instrument slot
+        can take, and there is nothing special about five of them. Instrument
+        types are named as categories only; no specific integration, and no named
+        facility, is claimed. All four agent boxes are the same component at the
+        same size; only what fills them differs. Three run as micro-services and
+        are deterministic. The one in the cloud is LLM-driven, and it is the only
+        one of the four that reasons. Nothing reasons at the centre &mdash; the
+        element in the middle is the exchange, which holds one mailbox per agent
+        and only carries messages. Messages travel between the agent boxes,
+        crossing the dashed boundaries on the way out and again on the way in,
+        and every hop is routed through the exchange. Numbered markers on the
+        routes give the order of a discovery cycle, which repeats without
+        stopping: one, the instrument agent publishes a reading; two, the data
+        store agent adds historical context; three, the cloud agent reasons over
+        both and picks what to try next; four, the HPC agent runs the simulation;
+        five, the result returns to the cloud agent and the loop closes. The four
+        placements, and the single reasoning agent among three micro-services,
+        follow the project's experiences paper,
+        <cite>Patterns and Experiences from Deploying Agents in Scientific
+        Applications</cite>.
+      </p>
+    </figure>
+
+    <h3 class="year-heading">How a message gets there</h3>
+
+    <figure class="arch-figure">
+      <div class="arch-figure__media">
+        <img src="{{ '/assets/images/academy-architecture.webp' | relative_url }}"
+             alt="Academy's architecture in three bands. Across the top, the
+                  Exchange forms a data plane holding one mailbox per participant,
+                  with arrows running both ways between each mailbox and its
+                  owner. In the middle, a User holds two Handles that point at
+                  Agents; each Agent contains Actions, a Control loop, Handles to
+                  other agents, and State. Along the bottom, Executors form a
+                  control plane that the User and both Agents connect down into."
+             width="1300" height="784" loading="lazy" decoding="async">
+      </div>
+      <figcaption>
+        Agents expose actions and run control loops over persistent state, and
+        communicate via distributed mailboxes on Academy's exchange.
+      </figcaption>
+    </figure>
+
+    <div class="arch-split">
+      <div class="arch-split__text">
+        <h3 class="year-heading">Agents, mailboxes, and executors</h3>
+        <p>
+          An agent is a Python class holding four things: <strong>actions</strong>
+          other agents can invoke, <strong>control loops</strong> that run on
+          their own, <strong>handles</strong> to its peers, and
+          <strong>state</strong> that persists across both.
+        </p>
+        <p>
+          Above the agents, the exchange gives each participant a mailbox.
+          Mailboxes are persistent, so a message sent to an agent that is
+          offline waits until it comes back. Agents behind a batch queue spend
+          much of their life offline.
+        </p>
+        <p>
+          Below them, executors place the agent process. Because the two planes
+          are independent, <em>where</em> an agent runs is decided separately
+          from <em>how</em> it is reached.
+        </p>
+        <p>
+          <a href="{{ '/blog/2026-05-logging.html' | relative_url }}">
+            Read how this is instrumented for observability &rarr;
+          </a>
+        </p>
+      </div>
+
+      <div class="arch-split__map">
+        <h3 class="year-heading">If you already use Parsl or LangGraph</h3>
+        <dl class="dl-list">
+          <div class="dl-list__row">
+            <dt>LangGraph, PydanticAI, LangChain</dt>
+            <dd>
+              Inside the <strong>Agent</strong> box. They build the reasoning
+              loop within a single agent. Academy does not constrain what that
+              loop is, or whether there is one.
+            </dd>
+          </div>
+          <div class="dl-list__row">
+            <dt>Parsl, Globus Compute</dt>
+            <dd>
+              The <strong>executor</strong> row. The manager drives execution
+              through any <code>concurrent.futures</code> executor, so these are
+              what place an agent on a compute node.
+            </dd>
+          </div>
+          <div class="dl-list__row">
+            <dt>Workflow systems</dt>
+            <dd>
+              They replace the whole picture with a task graph submitted from one
+              place. Academy's agents are long-lived and hold state between
+              calls, so they suit feedback loops that never resolve into a static
+              graph.
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled" id="model">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">The model</span>
+      <h2 class="section-title">What can be an agent?</h2>
+      <p class="section-lead">
+        An Academy agent is a primitive entity that has internal state, performs
+        actions, and communicates with other agents. Stateful actors are one kind
+        of agent, not a separate concept — that one building block covers a wide
+        range of implementations.
+      </p>
+    </div>
+
+    <div class="tile-grid">
+      {%- for kind in site.data.agent_kinds %}
+      <div class="tile">
+        <h3>{{ kind.title }}</h3>
+        <p>{{ kind.body }}</p>
+      </div>
+      {%- endfor %}
+    </div>
+
+    <div class="content-block">
+      <h3 class="year-heading">What Academy provides</h3>
+      <dl class="dl-list dl-list--split">
+        {%- for feature in site.data.features %}
+        <div class="dl-list__row">
+          <dt>{{ feature.title }}</dt>
+          <dd>{{ feature.body }}</dd>
+        </div>
+        {%- endfor %}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled" id="case-studies">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Evidence</span>
+      <h2 class="section-title">Where Academy is being used</h2>
+      <p class="section-lead">
+        Deployments built on Academy by teams at Argonne, Oak Ridge, the
+        University of Chicago, and the WHO African region. Only applications marked Production or
+        Finished are listed.
+      </p>
+    </div>
+
+    {%- assign slides = site.data.case_studies | where_exp: 'study', 'study.figure' %}
+    {%- if slides.size > 0 %}
+    {%- comment -%}
+      A scroll-snap track, not a scripted carousel: it scrolls natively, takes
+      keyboard arrows because the track is focusable, and works with JS off.
+      site.js only adds the previous/next buttons. Nothing auto-advances.
+    {%- endcomment -%}
+    <div class="carousel" data-carousel>
+      <ul class="carousel__track" tabindex="0" role="region"
+          aria-label="Scrollable gallery of architecture diagrams for {{ slides.size }} applications">
+        {%- for study in slides %}
+        <li class="carousel__slide">
+          <figure>
+            <div class="carousel__media">
+              <img src="{{ study.figure | relative_url }}" alt="{{ study.figure_alt | strip_newlines }}" loading="lazy" decoding="async">
+            </div>
+            <figcaption>
+              <span class="tile__meta">
+                {{ study.institution }}
+                {%- if study.domain %} <span aria-hidden="true">&middot;</span> {{ study.domain }}{% endif %}
+              </span>
+              <span class="carousel__title">
+                {{ study.system }}
+                {%- if study.stage %}<span class="tag tag--stage">{{ study.stage }}</span>{% endif %}
+              </span>
+              <span class="carousel__desc">{{ study.scale }}</span>
+            </figcaption>
+          </figure>
+        </li>
+        {%- endfor %}
+      </ul>
+    </div>
+    {%- endif %}
+
+    <div class="tile-grid">
+      {%- for study in site.data.case_studies %}
+      <div class="tile">
+        <span class="tile__meta">
+          {{ study.institution }}
+          {%- if study.domain %} <span aria-hidden="true">&middot;</span> {{ study.domain }}{% endif %}
+        </span>
+        <h3>{{ study.title }}</h3>
+        <p class="tile__system">
+          <strong>{{ study.system }}</strong>
+          {%- if study.stage %}<span class="tag tag--stage">{{ study.stage }}</span>{% endif %}
+        </p>
+        <p>{{ study.body }}</p>
+        {%- if study.result %}
+        <span class="tile__result">{{ study.result }}</span>
+        {%- endif %}
+        {%- if study.scale %}
+        <span class="tile__scale">{{ study.scale }}</span>
+        {%- endif %}
+        {%- if study.source.url %}
+        <a class="tile__source" href="{{ study.source.url }}" rel="noopener">{{ study.source.title }} &rarr;</a>
+        {%- endif %}
+      </div>
+      {%- endfor %}
+    </div>
+
+    {%- assign paper = site.data.publications | where: 'cite', true | first %}
+    <div class="content-block citation-strip">
+      <div class="citation-strip__text">
+        <h3 class="citation-strip__title">How to cite Academy</h3>
+        <p class="citation-strip__paper">{{ paper.title }}</p>
+        <p class="citation-strip__authors">{{ paper.authors }}</p>
+        <p class="citation-strip__venue">{{ paper.venue }}</p>
+      </div>
+      <div class="button-row">
+        {%- for link in paper.links %}
+        <a class="button button--secondary" href="{{ link.url }}" rel="noopener">{{ link.title }}</a>
+        {%- endfor %}
+        <a class="button button--secondary" href="{{ '/publications/' | relative_url }}">BibTeX</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ruled section--subtle" id="community">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Community</span>
+      <h2 class="section-title">Getting involved</h2>
+    </div>
+
+    <div class="card-grid">
+      <article class="card card--link">
+        <h3><a class="stretched" href="{{ site.links.slack }}" rel="noopener">Ask a question</a></h3>
+        <p>
+          Discussion and help getting started happen in the Academy Slack
+          workspace. Bugs and feature requests go in the
+          <a href="{{ site.links.issues }}" rel="noopener">issue tracker</a>;
+          common problems are covered in the
+          <a href="{{ site.links.faq }}" rel="noopener">FAQ</a>.
+        </p>
+        <span class="card__more" aria-hidden="true">Join Slack &rarr;</span>
+      </article>
+
+      <article class="card">
+        <h3>Community call</h3>
+        <p>
+          A fortnightly call where contributors present work in progress.
+          Recent sessions covered
+          <a href="{{ '/blog/2026-05-logging.html' | relative_url }}">observability</a>
+          and a student project integrating Diaspora into the logging system.
+          Planning also happens in the open, in issues and on the tracker.
+        </p>
+      </article>
+
+      <article class="card card--link">
+        <h3><a class="stretched" href="https://parsl-project.org/parslfest/apex2026.html" rel="noopener">APeX Summit</a></h3>
+        <p>
+          The annual community meeting shared with Parsl and Globus Compute.
+          APeX 2026 is a hybrid meeting on September 14–15, 2026, in person
+          in Chicago.
+        </p>
+        <span class="card__more" aria-hidden="true">Summit page &rarr;</span>
+      </article>
+
+      <article class="card card--link">
+        <h3><a class="stretched" href="{{ site.links.contributing }}" rel="noopener">Contribute</a></h3>
+        <p>
+          Development happens entirely in the open under the
+          {{ site.project.license }} license: code, issues, and planning alike. The
+          contributing guide covers the fork, branch, and pre-commit workflow.
+        </p>
+        <span class="card__more" aria-hidden="true">Contributing guide &rarr;</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+{%- assign recent_posts = site.posts | slice: 0, 3 %}
+{%- if recent_posts.size > 0 %}
+<section class="section section--ruled section--subtle" id="news">
+  <div class="container">
+    <div class="section-head section-head--row">
+      <div>
+        <span class="section-eyebrow">Latest</span>
+        <h2 class="section-title">News &amp; blog</h2>
+      </div>
+      <a class="button button--secondary" href="{{ '/blog/' | relative_url }}">All news &amp; blog posts</a>
+    </div>
+
+    <div class="card-grid">
+      {%- for post in recent_posts %}
+        {%- include post-card.html post=post %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endif %}

@@ -1,0 +1,50 @@
+# Publications listed at /publications/.
+#
+# Source: the citation section of the academy-agents/academy README
+# (github.com/academy-agents/academy). Not written from memory — but please
+# sanity-check the venue and page numbers against the published version.
+#
+# Fields:
+#   title       required
+#   authors     author list, exactly as published
+#   venue       conference / journal / "Preprint"
+#   year        required, used for grouping and sort order
+#   links       list of {title, url}
+#   bibtex      pasted verbatim from the publisher or the project README
+
+# Upstream docs/publications/index.md invites people who use Academy to open a
+# PR to be featured. Mirror new entries here when that happens — a growing list
+# of papers that *use* Academy is one of the few durable adoption signals a
+# research project has.
+- title: "Agentic Discovery: Closing the Loop With Cooperative Agents"
+  authors: "J. Gregory Pauloski, Kyle Chard, and Ian Foster"
+  venue: "Computer, vol. 58, no. 10, pp. 20–27"
+  year: 2025
+  links:
+    - title: DOI
+      url: https://doi.ieeecomputersociety.org/10.1109/MC.2025.3575029
+
+- title: "Empowering Scientific Workflows with Federated Agents"
+  # The paper to cite for Academy itself. Selected by `cite`, not by position.
+  cite: true
+  authors: >-
+    Alok Kamatar, J. Gregory Pauloski, Yadu Babuji, Ryan Chard,
+    Mansi Sakarvadia, Daniel Babnigg, Kyle Chard, and Ian Foster
+  venue: >-
+    2026 IEEE International Parallel and Distributed Processing Symposium
+    (IPDPS), pp. 1403–1418
+  year: 2026
+  links:
+    - title: DOI
+      url: https://doi.org/10.1109/IPDPS65963.2026.00114
+    - title: arXiv
+      url: https://arxiv.org/abs/2505.05428
+  bibtex: |
+    @inproceedings{kamatar2026academy,
+        title = {Empowering Scientific Workflows with Federated Agents},
+        author = {Alok Kamatar and J. Gregory Pauloski and Yadu Babuji and Ryan Chard and Mansi Sakarvadia and Daniel Babnigg and Kyle Chard and Ian Foster},
+        booktitle = {2026 IEEE International Parallel and Distributed Processing Symposium (IPDPS)},
+        doi = {10.1109/IPDPS65963.2026.00114},
+        pages = {1403-1418},
+        year = {2026}
+    }

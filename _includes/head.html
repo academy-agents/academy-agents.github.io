@@ -1,0 +1,39 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1216" media="(prefers-color-scheme: dark)">
+
+<script>
+  /* Apply the stored theme before first paint so the page never flashes the
+     wrong one. Must stay inline and ahead of the stylesheet. */
+  (function () {
+    /* Mark that scripting is available. The collapsed mobile nav is gated on
+       this class, so with JS blocked the menu stays visible and usable instead
+       of being hidden by CSS that only JS could undo. */
+    document.documentElement.classList.add('js');
+
+    try {
+      var stored = localStorage.getItem('academy-theme');
+      if (stored === 'light' || stored === 'dark') {
+        document.documentElement.setAttribute('data-theme', stored);
+      }
+    } catch (e) { /* private browsing — fall back to the system preference */ }
+  })();
+</script>
+
+{%- seo -%}
+{%- feed_meta -%}
+
+<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+<link rel="icon" href="{{ '/logos/logo-Academy-2025-200x200-light-bg.png' | relative_url }}">
+<link rel="apple-touch-icon" href="{{ '/logos/logo-Academy-2025-200x200-light-bg.png' | relative_url }}">
+
+{%- if site.google_analytics and jekyll.environment == 'production' %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ site.google_analytics }}');
+</script>
+{%- endif %}

@@ -1,0 +1,50 @@
+<footer class="site-footer">
+  <div class="container">
+    {%- comment -%}
+      Column titles are <p>, not <h2>. As headings they were three quarters of
+      the outline on short pages (h1 Team -> h2 Contributing -> h2 Project ->
+      h2 Research -> h2 Community). aria-labelledby keeps each list named for
+      assistive tech without polluting heading navigation.
+    {%- endcomment -%}
+    <nav class="footer-grid" aria-label="Footer">
+      <div class="footer-brand">
+        <img class="logo--light" src="{{ '/logos/logo-Academy-2025-500x200-light-bg.png' | relative_url }}" alt="Academy" width="500" height="200" loading="lazy" decoding="async">
+        <img class="logo--dark" src="{{ '/logos/logo-Academy-2025-500x200-dark-bg.png' | relative_url }}" alt="Academy" width="500" height="200" loading="lazy" decoding="async">
+        <p>{{ site.description }}</p>
+      </div>
+
+      {%- for column in site.data.navigation.footer %}
+        {%- assign column_id = 'footer-col-' | append: forloop.index %}
+      <div class="footer-col">
+        <p class="footer-col__title" id="{{ column_id }}">{{ column.title }}</p>
+        <ul aria-labelledby="{{ column_id }}">
+          {%- for item in column.items %}
+          <li>
+            <a href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"
+               {%- if item.url contains '://' %} rel="noopener"{% endif %}>{{ item.title }}</a>
+          </li>
+          {%- endfor %}
+        </ul>
+      </div>
+      {%- endfor %}
+    </nav>
+
+    <div class="footer-bottom">
+      {%- assign this_year = site.time | date: '%Y' %}
+      <p>
+        &copy;
+        {%- if this_year == site.copyright_start_year %} {{ this_year }}
+        {%- else %} {{ site.copyright_start_year }}&ndash;{{ this_year }}
+        {%- endif %} {{ site.copyright_holder }}.
+        Academy is released under the
+        <a href="{{ site.links.license }}" rel="noopener">{{ site.project.license }} license</a>,
+        copyright {{ site.project.copyright_entity }}.
+      </p>
+      <p>
+        Based on research from
+        <a href="{{ site.links.paper }}" rel="noopener">Empowering Scientific Workflows with Federated Agents</a>
+        (arXiv:2505.05428).
+      </p>
+    </div>
+  </div>
+</footer>

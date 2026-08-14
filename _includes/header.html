@@ -1,0 +1,70 @@
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Main">
+    <a class="site-logo" href="{{ '/' | relative_url }}">
+      {%- comment -%}
+        Both variants are in the DOM and swapped by CSS on theme. Their alt is
+        empty so the link's name comes from the visually hidden span instead —
+        otherwise the link would lose its accessible name in whichever theme
+        hides the labelled image.
+      {%- endcomment -%}
+      <img class="logo--light" src="{{ '/logos/logo-Academy-2025-500x200-light-bg.png' | relative_url }}" alt="" width="500" height="200">
+      <img class="logo--dark" src="{{ '/logos/logo-Academy-2025-500x200-dark-bg.png' | relative_url }}" alt="" width="500" height="200">
+      <span class="visually-hidden">Academy home page</span>
+    </a>
+
+    <ul class="nav-menu" id="nav-menu">
+      {%- for item in site.data.navigation.main -%}
+        {%- assign is_current = false -%}
+        {%- if page.url == item.url -%}
+          {%- assign is_current = true -%}
+        {%- elsif item.match and page.url contains item.match -%}
+          {%- assign is_current = true -%}
+        {%- endif -%}
+        <li>
+          <a href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"
+             {%- if is_current %} aria-current="page"{% endif -%}
+             {%- if item.url contains '://' %} rel="noopener"{% endif %}>{{ item.title }}</a>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="nav-actions">
+      <a class="icon-button" href="{{ site.links.github }}" rel="noopener" title="Academy on GitHub">
+        <span class="visually-hidden">Academy on GitHub</span>
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+        </svg>
+      </a>
+
+      <a class="icon-button" href="{{ site.links.slack }}" rel="noopener" title="Join the Academy Slack">
+        <span class="visually-hidden">Join the Academy Slack</span>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M5.04 15.17a2.52 2.52 0 1 1-2.52-2.52h2.52v2.52Zm1.27 0a2.52 2.52 0 0 1 5.04 0v6.31a2.52 2.52 0 0 1-5.04 0v-6.31ZM8.83 5.04a2.52 2.52 0 1 1 2.52-2.52v2.52H8.83Zm0 1.27a2.52 2.52 0 0 1 0 5.04H2.52a2.52 2.52 0 0 1 0-5.04h6.31ZM18.96 8.83a2.52 2.52 0 1 1 2.52 2.52h-2.52V8.83Zm-1.27 0a2.52 2.52 0 0 1-5.04 0V2.52a2.52 2.52 0 0 1 5.04 0v6.31ZM15.17 18.96a2.52 2.52 0 1 1-2.52 2.52v-2.52h2.52Zm0-1.27a2.52 2.52 0 0 1 0-5.04h6.31a2.52 2.52 0 0 1 0 5.04h-6.31Z"/>
+        </svg>
+      </a>
+
+      <span class="nav-divider" aria-hidden="true"></span>
+
+      <button class="icon-button theme-toggle" type="button" id="theme-toggle"
+              aria-label="Switch between light and dark theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+        </svg>
+      </button>
+
+      <button class="icon-button nav-toggle" type="button" id="nav-toggle"
+              aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+</header>

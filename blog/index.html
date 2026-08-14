@@ -1,81 +1,114 @@
-<html>
-<head>
-<link rel="stylesheet" href="../site.css">
+---
+layout: page
+permalink: /blog/
+title: News & blog
+lead: >-
+  Tutorials, conference talks, community-call presentations, and technical
+  write-ups from the people building Academy.
+wide: true
+---
 
-</head>
-<body>
-<h1 class="section-title">Academy news and blog</h1>
+{%- comment -%}
+  The feed mixes substantive posts with pointers to PDFs and external event
+  pages, so a uniform card grid gave a two-line slide link the same weight as a
+  long technical article. Instead: one featured post, then a dense dated list.
 
-            <div class="features-grid">
+  Rows show `event_date` when a post has one, so a talk announced in July for a
+  September summit sorts by announcement but *displays* the date that matters.
+  Events already past are marked, because a list of "Join us at…" for things
+  that happened months ago makes the project look dormant.
 
-                <!-- copy this feature card div to add a new blog or news item -->
-                <!-- Add new cards below this comment but above the most recent post -->
-                 <div class="feature-card">
-                    <span class="feature-icon">📅</span>
-                    <h3><a href="https://parsl-project.org/parslfest/apex2026.html">APeX Summit (Academy, Parsl, Globus Compute) annual community meeting</a></h3>
-                    <p>
-The APeX Summit is the eighth annual community meeting, bringing together researchers, developers, and cyberinfrastructure experts worldwide to discuss experiences using and developing Academy, Parsl, and Globus Compute. The summit will be held as a hybrid meeting on September 14–15, 2026, with the in-person component in Chicago.
+  Links wrap the title only, with a .stretched overlay for the click target —
+  wrapping the whole row produced 200-character accessible names.
+{%- endcomment -%}
+
+{%- assign featured = site.posts | where: "featured", true | first -%}
+{%- unless featured -%}
+  {%- assign featured = site.posts | where_exp: "p", "p.external_url == nil" | first -%}
+{%- endunless -%}
+{%- assign featured_url = featured.url -%}
+{%- assign now_ts = site.time | date: '%s' | plus: 0 -%}
+
+{%- if featured %}
+<article class="featured-post">
+  <span class="featured-post__meta">
+    {%- if featured.kind %}<span class="tag">{{ featured.kind }}</span>{% endif %}
+    <time datetime="{{ featured.date | date_to_xmlschema }}">{{ featured.date | date: "%B %Y" }}</time>
+    {%- if featured.author %}
+    <span aria-hidden="true">&middot;</span>
+    <span>{{ featured.author }}</span>
+    {%- endif %}
+  </span>
+
+  <h2 class="featured-post__title">
+    <a class="stretched" href="{{ featured.url | relative_url }}">{{ featured.title }}</a>
+  </h2>
+
+  {%- if featured.summary %}
+  <p class="featured-post__excerpt">{{ featured.summary }}</p>
+  {%- endif %}
+
+  <span class="featured-post__more" aria-hidden="true">Read the post &rarr;</span>
+</article>
+{%- endif %}
+
+{%- assign rest = site.posts | where_exp: "p", "p.url != featured_url" -%}
+{%- assign years = rest | group_by_exp: "p", "p.date | date: '%Y'" %}
+
+<div class="post-list">
+  {%- for year in years %}
+  <h2 class="post-list__year">{{ year.name }}</h2>
+
+  {%- for post in year.items %}
+    {%- assign is_offsite = false -%}
+    {%- assign is_download = false -%}
+    {%- if post.external_url -%}
+      {%- if post.external_url contains '://' -%}
+        {%- assign target = post.external_url -%}
+        {%- assign is_offsite = true -%}
+      {%- else -%}
+        {%- assign target = post.external_url | relative_url -%}
+      {%- endif -%}
+      {%- if post.external_url contains '.pdf' -%}
+        {%- assign is_download = true -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- assign target = post.url | relative_url -%}
+    {%- endif -%}
+
+    {%- assign shown_date = post.event_date | default: post.date -%}
+    {%- assign is_past_event = false -%}
+    {%- if post.event_date -%}
+      {%- assign event_ts = post.event_date | date: '%s' | plus: 0 -%}
+      {%- if event_ts < now_ts %}{% assign is_past_event = true %}{% endif -%}
+    {%- endif -%}
+
+  <div class="post-row{% if is_past_event %} post-row--past{% endif %}">
+    <time class="post-row__date" datetime="{{ shown_date | date_to_xmlschema }}">{{ shown_date | date: "%b %-d" }}</time>
+    <span class="post-row__kind">
+      {%- if post.kind %}<span class="tag">{{ post.kind }}</span>{% endif -%}
+    </span>
+    <span class="post-row__body">
+      <span class="post-row__title">
+        <a class="stretched" href="{{ target }}"{% if is_offsite %} rel="noopener"{% endif %}>{{ post.title }}
+          {%- if is_download %}<span class="visually-hidden"> (PDF)</span>
+          {%- elsif is_offsite %}<span class="visually-hidden"> (external link)</span>{% endif -%}
+        </a>
+      </span>
+      {%- if post.location %}
+      <span class="post-row__summary">{{ post.location }}</span>
+      {%- elsif post.summary %}
+      <span class="post-row__summary">{{ post.summary | strip | truncatewords: 20 }}</span>
+      {%- endif %}
+    </span>
+    <span class="post-row__arrow" aria-hidden="true">
+      {%- if is_download %}&darr;{% elsif is_offsite %}&#8599;{% else %}&rarr;{% endif -%}
+    </span>
+  </div>
+  {%- endfor %}
+  {%- endfor %}
+</div>
+
+<p class="post-list__feed">
+  Subscribe via <a href="{{ '/feed.xml' | relative_url }}">RSS</a>.
 </p>
-                </div>
-
-                 <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="2026-06-22-isc-tutorial.html">Academy ISC Tutorial (June 22, 2026)</a></h3>
-                    <p>Join us at ISC 2026 for another edition of the Academy tutorial.</p>
-                </div>
-
-                <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="2026-05-26-ipdps-tutorial.html">Academy IPDPS Tutorial (May 26, 2026)</a></h3>
-                    <p>Join us at IPDPS 2026 for a tutorial on how to use Academy to build scalable and distributed agentic workflows.</p>
-                </div>
-
- 
-
-                 <div class="feature-card">
-                    <span class="feature-icon">🔎</span>
-                    <h3><a href="2026-06-Academy_diaspora_integration.pdf">Student presentation: Academy+Diaspora integration (June 17, 2026)</a></h3>
-                    <p>Gulesh gave a presentation on his work integrating Diaspora into Academy's logging system at our Academy community call on June 17, 2026</p>
-                </div>
-
-                 <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="2026-06-22-isc-tutorial.html">Academy ISC Tutorial (June 22, 2026)</a></h3>
-                    <p>Join us at ISC 2026 for another edition of the Academy tutorial.</p>
-                </div>
-
-                <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="2026-05-26-ipdps-tutorial.html">Academy IPDPS Tutorial (May 26, 2026)</a></h3>
-                    <p>Join us at IPDPS 2026 for a tutorial on how to use Academy to build scalable and distributed agentic workflows.</p>
-                </div>
-
-                <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="https://expo.scsp.ai/">AI+ Expo (May 2026)</a></h3>
-                    <p>Learn about Academy's role in extreme-scale DOE research at the AI+ Expo in DC.</p>
-                </div>
-                        
-                <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="https://2026midwestrcdconsortium.sched.com/event/2Iirp/keynote-national-strategy-agentic-ai-science-the-genesis-mission">Keynote at the Midwest RCD Consortium (May 2026)</a></h3>
-                    <p>Hear about how Academy is being used in the DOE Genesis Mission.</p>
-                </div>
-                        
-                <div class="feature-card">
-                    <span class="feature-icon">🔎</span>
-                    <h3><a href="2026-05-logging.html">Observability in Academy (May 2026)</a></h3>
-                    <p>Read about Academy's road map for observability, distributed logging and provenance.</p>
-                </div>
-
-                <div class="feature-card">
-                    <span class="feature-icon">🎓</span>
-                    <h3><a href="../files/APS-Tutorial-2026.pdf">Slides for the Academy Tutorial (Feb 2026)</a></h3>
-                    <p>These <a href="../files/APS-Tutorial-2026.pdf">slides</a> go along with the tutorial repository at <a href="https://github.com/academy-agents/academy-tutorial/">https://github.com/academy-agents/academy-tutorial/</a></p>
-                </div>
-
-             </div>
-
-</body>
-</html>
-

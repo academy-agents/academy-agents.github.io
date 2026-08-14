@@ -1,0 +1,54 @@
+{%- comment -%}
+  One card in a news/blog grid.
+
+  Usage: {% include post-card.html post=post %}
+
+  Posts come in two shapes:
+    * Full posts, which render their own page.
+    * Link posts, which set `external_url` in front matter and act as a pointer
+      to a PDF, an event page, or another site. They have no body.
+{%- endcomment -%}
+
+{%- assign post = include.post -%}
+
+{%- if post.external_url -%}
+  {%- if post.external_url contains '://' -%}
+    {%- assign target = post.external_url -%}
+    {%- assign is_offsite = true -%}
+  {%- else -%}
+    {%- assign target = post.external_url | relative_url -%}
+    {%- assign is_offsite = false -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign target = post.url | relative_url -%}
+  {%- assign is_offsite = false -%}
+{%- endif -%}
+
+<article class="card card--link">
+  {%- if post.icon %}
+  <span class="card__icon" aria-hidden="true">{{ post.icon }}</span>
+  {%- endif %}
+
+  <div class="card__meta">
+    <time class="card__date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %Y" }}</time>
+    {%- if post.kind %}
+    <span class="tag">{{ post.kind }}</span>
+    {%- endif %}
+  </div>
+
+  <h3>
+    <a class="stretched" href="{{ target }}"{% if is_offsite %} rel="noopener"{% endif %}>{{ post.title }}</a>
+  </h3>
+
+  {%- if post.summary %}
+  <p>{{ post.summary }}</p>
+  {%- endif %}
+
+  <span class="card__more" aria-hidden="true">
+    {%- if post.external_url -%}
+      {{ post.link_text | default: "Open the linked page" }} &rarr;
+    {%- else -%}
+      Read the post &rarr;
+    {%- endif -%}
+  </span>
+</article>

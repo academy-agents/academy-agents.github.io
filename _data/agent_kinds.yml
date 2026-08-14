@@ -1,0 +1,30 @@
+# "What can be an agent?" — shown on the home page.
+#
+# Source: the academy-agents/academy README. In Academy an agent is a primitive
+# entity that (1) has internal state, (2) performs actions, and (3) communicates
+# with other agents, so the same building block covers all of these.
+- title: Stateful actors
+  body: Manage their own data and respond to requests in a distributed system.
+
+- title: LLM agents
+  body: Integrate LLM-based reasoning and tool calling.
+
+- title: Embodied agents
+  body: >-
+    The "brain" controlling a robot or simulated entity, where actions become
+    motor commands or environment manipulations.
+
+- title: Computational units
+  body: >-
+    Encapsulate a specific task — running a simulation, processing data, or
+    training a model.
+
+- title: Orchestrators
+  body: >-
+    Coordinate the activities of other agents, distributing tasks and monitoring
+    progress.
+
+- title: Data interfaces
+  body: >-
+    Interact with databases, file systems, or sensors behind a consistent
+    interface.
