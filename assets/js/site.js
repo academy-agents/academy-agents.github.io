@@ -151,18 +151,16 @@
      The "where agents live" diagram. Everything the figure means is already in
      the markup — four identical entities, the Academy agent inside each one,
      all five instrument bubbles with their tethers drawn, the whole wire
-     network, and the order of the loop numbered on the routes — so this file
-     adds no content at all. It does exactly two things: it lets the motion run
-     only while the figure is on screen, and it offers a way to stop it.
+     network, and four mailboxes with their flags down — so this file adds no
+     content at all. It does exactly one thing: it lets the motion run only
+     while the figure is on screen.
 
-     One button, not two. Both animations run continuously and at the same
-     time, so there is no idle state for a "replay" to restart and nothing for
-     it to mean. What is left is the requirement: motion that starts by itself
-     and does not stop within five seconds needs a control that stops it
-     (WCAG 2.2.2). That is Pause.
+     It injects no control. The pause button was removed at the client's
+     request; motion still stops entirely for anyone with
+     prefers-reduced-motion, and whenever the figure scrolls out of view.
 
-     Both the button and the motion are injected/gated from here, so with
-     scripting blocked the figure is static and complete. */
+     The motion is gated from here, so with scripting blocked the figure is
+     static and complete. */
 
   var vision = document.querySelector('[data-vision]');
 

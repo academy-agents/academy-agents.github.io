@@ -9,3 +9,6 @@ _site/
 vendor/
 
 .DS_Store
+
+# Internal build specs — quote unpublished work, keep them out of a public repo
+docs/

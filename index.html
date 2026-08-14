@@ -309,16 +309,11 @@ async def main() -> None:
          message visibly crosses two dashed boundaries. That is the federation
          claim, drawn.
 
-      THE FIGURE CARRIES ITSELF. There is no legend, no step list and no
-      caption beside this drawing any more: everything they used to say is
-      either drawn or written into #vision-desc. Two things moved rather than
-      vanished, and both must stay put.
+      THE FIGURE CARRIES ITSELF. There is no legend, no step list, no numbered
+      markers and no caption beside this drawing any more: everything they used
+      to say is either drawn or written into #vision-desc. One thing moved
+      rather than vanished, and it must stay put.
 
-      - The order of the loop is drawn, as five numbered markers threaded onto
-        the routes themselves (1, 2, 4 and 5 on the four hops; 3 pinned to the
-        cloud agent, because step 3 is a computation and not a hop). They are
-        legible with nothing moving, which is what the reduced-motion state and
-        the scripting-off state both render.
       - The sourcing lines are in the prose above and in #vision-desc: design
         intent not a deployment record, categories only with no specific
         integration claimed, and the paper by title. They are the accuracy
@@ -348,6 +343,9 @@ async def main() -> None:
         the size of the other three, and they never stop moving while the
         figure is on screen: motion plus connection is the content, which is
         that the slot takes any number of capabilities.
+      - The mailbox flags encode whether a message is waiting to be collected.
+        They are not ornament, and #vision-desc says what they mean because a
+        state that only exists in the drawing is a state some readers never get.
     {%- endcomment -%}
 
     <figure class="vision" data-vision>
@@ -474,30 +472,98 @@ async def main() -> None:
                four because every hop in the cycle has it at one end; the HPC
                agent has two; the instrument and the data store send once each.
                That is what makes "one mailbox per agent, and every hop goes
-               through two of them" legible rather than asserted. -->
-          <g>
-            <rect class="wgd-mbox" x="396" y="169" width="34" height="22" rx="5"/>
-            <path class="wgd-mbox-lines" d="M404,176 H422 M404,184 H422"/>
-            <rect class="wgd-mflash wgd-t1" x="396" y="169" width="34" height="22" rx="5"/>
+               through two of them" legible rather than asserted.
+
+               All four are ONE glyph — an arched body and a flag, and nothing
+               else — drawn at local coordinates in a 34x22 box and only
+               placed. There was a door seam and a knob on the body once. At
+               the size this figure actually renders they were two marks about
+               a pixel wide sitting inside a 34-unit body, so they read as
+               noise on the metal rather than as a door, and they are gone. The
+               body path is untouched, so the footprint is identical and no
+               wire endpoint or spine proportion moves. The right-hand pair is
+               the same glyph mirrored, scale(-1,1), which is what puts every
+               flag on the shoulder facing the rail — that is now the only job
+               the mirror does, and it is still load-bearing.
+
+               THE FLAG IS STATE, NOT DECORATION. Academy's mailboxes are
+               persistent: a message sent to an agent that is not there to take
+               it waits in that agent's mailbox until it comes back. So the
+               flag goes up when a letter is posted into a mailbox and comes
+               down when the agent collects it, and in between the letter is
+               parked inside the box, out of sight. Flag up means "there is a
+               message here that has not been collected yet" — a real property
+               of the exchange, and the reason this figure draws mailboxes
+               rather than queues. It is stated in #vision-desc too, because a
+               reader who cannot see the flag still needs the property.
+
+               ONE FLAG ELEMENT PER MAILBOX, however many hops arrive at it.
+               The cloud agent receives three of the four hops and has one
+               flag; its keyframe carries all three raise windows at their own
+               percentages of the loop. It used to carry three flag elements on
+               three delays, and that is what produced the ghost this revision
+               fixes: a resting flag lies at rotate(-90deg) along the roof, so
+               raising one of the three drew the other two, lowered, directly
+               underneath it.
+
+               Several windows inside ONE keyframe is one animation with
+               several events. That is safe under `infinite` and is not the
+               duplicated-`animation-name` trap this project hit earlier —
+               that one was two infinite animations on a single element, where
+               the later declaration wins forever because both are permanently
+               in their active phase. Timing lives in CSS section 9b.
+
+               In this cycle the instrument and the data store only ever send,
+               so their flags never rise. That is the drawn loop being honest,
+               not an omission. -->
+          <g transform="translate(396,169)">
+            <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g transform="translate(28.5,2.6)">
+              <!-- the instrument only ever sends: this flag never rises -->
+              <g class="wgd-flag">
+                <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
+                <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
+              </g>
+            </g>
+            <path class="wgd-mflash wgd-t1" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
-          <g>
-            <rect class="wgd-mbox" x="396" y="375" width="34" height="22" rx="5"/>
-            <path class="wgd-mbox-lines" d="M404,382 H422 M404,390 H422"/>
-            <rect class="wgd-mflash wgd-t2" x="396" y="375" width="34" height="22" rx="5"/>
+          <g transform="translate(396,375)">
+            <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g transform="translate(28.5,2.6)">
+              <!-- the data store only ever sends: this flag never rises -->
+              <g class="wgd-flag">
+                <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
+                <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
+              </g>
+            </g>
+            <path class="wgd-mflash wgd-t2" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
-          <g>
-            <rect class="wgd-mbox" x="490" y="169" width="34" height="22" rx="5"/>
-            <path class="wgd-mbox-lines" d="M498,176 H516 M498,184 H516"/>
-            <rect class="wgd-mflash wgd-t4" x="490" y="169" width="34" height="22" rx="5"/>
-            <rect class="wgd-mflash wgd-t5" x="490" y="169" width="34" height="22" rx="5"/>
+          <g transform="translate(524,169) scale(-1,1)">
+            <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g transform="translate(28.5,2.6)">
+              <!-- one arrival, hop 4: the simulation request. One window. -->
+              <g class="wgd-flag wgd-flag--hpc">
+                <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
+                <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
+              </g>
+            </g>
+            <path class="wgd-mflash wgd-t4" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <path class="wgd-mflash wgd-t5" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
-          <g>
-            <rect class="wgd-mbox" x="490" y="375" width="34" height="22" rx="5"/>
-            <path class="wgd-mbox-lines" d="M498,382 H516 M498,390 H516"/>
-            <rect class="wgd-mflash wgd-t1" x="490" y="375" width="34" height="22" rx="5"/>
-            <rect class="wgd-mflash wgd-t2" x="490" y="375" width="34" height="22" rx="5"/>
-            <rect class="wgd-mflash wgd-t4" x="490" y="375" width="34" height="22" rx="5"/>
-            <rect class="wgd-mflash wgd-t5" x="490" y="375" width="34" height="22" rx="5"/>
+          <g transform="translate(524,375) scale(-1,1)">
+            <path class="wgd-mbox" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <g transform="translate(28.5,2.6)">
+              <!-- three arrivals, hops 1, 2 and 5. ONE element, three windows
+                   in its keyframe. Three stacked elements is what ghosted. -->
+              <g class="wgd-flag wgd-flag--cloud">
+                <path class="wgd-flag-arm" d="M0,0 V-4.2"/>
+                <rect class="wgd-flag-blade" x="0" y="-12.4" width="5.8" height="8.2" rx="1"/>
+              </g>
+            </g>
+            <path class="wgd-mflash wgd-t1" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <path class="wgd-mflash wgd-t2" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <path class="wgd-mflash wgd-t4" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
+            <path class="wgd-mflash wgd-t5" d="M0,22 V10 A17,10 0 0 1 34,10 V22 Z"/>
           </g>
 
           <!-- ================= The Academy agent, four times =============
@@ -565,24 +631,58 @@ async def main() -> None:
           <rect class="wgd-think wgd-t3a" x="604" y="349" width="162" height="74" rx="14"/>
           <rect class="wgd-think wgd-t3b" x="604" y="349" width="162" height="74" rx="14"/>
 
-          <!-- ================= Messages ==================================
-               One per hop, each authored in its direction of travel so a
-               single keyframe rule drives all four. pathLength="100"
-               normalises routes of very different lengths to one tempo. Every
-               route leaves an agent box, crosses its dashed boundary, passes
-               through the sender's mailbox, the rail, the receiver's mailbox,
-               and crosses back in through the receiver's dashed boundary.
+          <!-- ================= Messages: letters =========================
+               One per hop. Each is a real <g> — an envelope — carried along
+               its route by a CSS motion path, not a dot painted onto a stroke:
+               the previous marker was a near-zero dash with a round cap, and a
+               dash can only ever be a dot. offset-path holds the route,
+               offset-distance is what animates, and offset-rotate is pinned to
+               0deg because its initial value, auto, turns the envelope upside
+               down on the three hops that end up travelling right to left. The
+               flutter is a rotation on a child group so it layers on top of
+               the motion instead of contending for the same property, and the
+               whole thing stays inside the existing .is-running and
+               reduced-motion gating without either of them changing.
 
-               The loop runs continuously: one keyframe holds the whole 11s
-               cycle and each hop takes its slot in it by animation-delay. -->
-          <path class="wgd-pulse wgd-t1" pathLength="100"
-                d="M311,180 H450 Q460,180 460,190 V376 Q460,386 470,386 H609"/>
-          <path class="wgd-pulse wgd-t2" pathLength="100"
-                d="M311,386 H609"/>
-          <path class="wgd-pulse wgd-t4" pathLength="100"
-                d="M609,386 H470 Q460,386 460,376 V190 Q460,180 470,180 H609"/>
-          <path class="wgd-pulse wgd-t5" pathLength="100"
-                d="M609,180 H470 Q460,180 460,190 V376 Q460,386 470,386 H609"/>
+               The four routes are in CSS section 9b rather than here, because
+               offset-path is a CSS property and there is nowhere else for them
+               to live. They are the same four routes as before: each leaves an
+               agent box, crosses its dashed boundary, passes through the
+               sender's mailbox, the rail and the receiver's mailbox, and
+               crosses back in through the receiver's dashed boundary.
+
+               Each letter is posted into the receiving mailbox part-way along
+               — --wgd-stop is how far along its own route that mailbox sits —
+               and waits there, out of sight, while that mailbox's flag is up.
+               The pause is the content: the mailbox holds the message until
+               the agent collects it.
+
+               Authored centred on (0,0) so the envelope's own centre is what
+               rides the path, and so the flutter rotates about its middle. -->
+          <g class="wgd-letter wgd-letter--h1 wgd-t1">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
+          <g class="wgd-letter wgd-letter--h2 wgd-t2">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
+          <g class="wgd-letter wgd-letter--h4 wgd-t4">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
+          <g class="wgd-letter wgd-letter--h5 wgd-t5">
+            <g class="wgd-flutter">
+              <rect class="wgd-letter-body" x="-9.5" y="-6.25" width="19" height="12.5" rx="1.8"/>
+              <path class="wgd-letter-flap" d="M-9.5,-5.4 L0,1.2 L9.5,-5.4"/>
+            </g>
+          </g>
 
           <!-- ================= Instrument bubbles ========================
                Five kinds of instrument, orbiting the instrument entity on an
@@ -708,14 +808,22 @@ async def main() -> None:
         are deterministic. The one in the cloud is LLM-driven, and it is the only
         one of the four that reasons. Nothing reasons at the centre &mdash; the
         element in the middle is the exchange, which holds one mailbox per agent
-        and only carries messages. Messages travel between the agent boxes,
-        crossing the dashed boundaries on the way out and again on the way in,
-        and every hop is routed through the exchange. Numbered markers on the
-        routes give the order of a discovery cycle, which repeats without
-        stopping: one, the instrument agent publishes a reading; two, the data
-        store agent adds historical context; three, the cloud agent reasons over
-        both and picks what to try next; four, the HPC agent runs the simulation;
-        five, the result returns to the cloud agent and the loop closes. The four
+        and only carries messages. Each mailbox is drawn as a curbside mailbox
+        with a flag, and the flag carries state rather than decoration: it is
+        raised while a letter is waiting in that mailbox and lowered once the
+        receiving agent has collected it. Academy's mailboxes are persistent, so
+        a message sent to an agent that is not there to take it waits in that
+        agent's mailbox until it returns. Messages travel as letters between the
+        agent boxes, crossing the dashed boundaries on the way out and again on
+        the way in, and every hop is routed through the exchange: each letter is
+        posted into the receiving agent's mailbox, waits there with the flag up,
+        and is then collected. The order of the discovery cycle, which repeats
+        without stopping, is: one, the instrument agent publishes a reading; two,
+        the data store agent adds historical context; three, the cloud agent
+        reasons over both and picks what to try next; four, the HPC agent runs
+        the simulation; five, the result returns to the cloud agent and the loop
+        closes. In this cycle the instrument and the data store only send, so
+        their flags stay down. The four
         placements, and the single reasoning agent among three micro-services,
         follow the project's experiences paper,
         <cite>Patterns and Experiences from Deploying Agents in Scientific
