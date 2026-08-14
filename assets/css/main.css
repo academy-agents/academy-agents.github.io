@@ -822,13 +822,16 @@ main { flex: 1 0 auto; }
      than as a list of var() calls. Every pairing was computed against the
      surface it actually lands on, not eyeballed. Worst cases, light / dark:
 
-       rail / mailbox body edge, lowered flag, on bg-inset      3.04 / 3.03 [3]
+       rail, junction beads, mailbox body edge and lowered
+         flag, all --border-strong on bg-inset                   3.04 / 3.03 [3]
        border-strong on bg-subtle (boundary inner half, tether
          over an entity)                                        3.15 / 3.33 [3]
        border-strong on bg  (boundary outer half, tethers,
          wires, bubble rings)                                   3.35 / 3.51 [3]
-       bubble icon at its 0.62 dim, composited on bg-subtle     4.28 / 5.75 [3]
-       text-faint on bg-raised   (ACADEMY AGENT eyebrow)        4.94 / 4.76 [4.5]
+       bubble icon at its 0.62 dim, composited on bg-subtle     4.88 / 6.38 [3]
+       text-faint on bg-raised   (ACADEMY AGENT part label)     4.94 / 4.76 [4.5]
+       text-faint on bg          (EXCHANGE part label, which
+         sits outside the box and so lands on the page)         5.07 / 5.22 [4.5]
        text-muted on accent-sub  (LLM-driven)                   5.38 / 6.48 [4.5]
        text-muted on bg-inset    (kind text)                    5.60 / 6.42 [4.5]
        text-muted on bg-subtle   (entity reason line)           5.81 / 7.06 [4.5]
@@ -840,6 +843,13 @@ main { flex: 1 0 auto; }
          letter over an agent box)                              7.17 / 6.67 [3]
        accent on bg              (letter between entities)      7.36 / 7.31 [3]
        text on bg-subtle         (bubble icon)                 16.74 /14.99 [4.5]
+
+     Every figure above was recomputed from the tokens in section 1 rather than
+     carried forward. One did not reproduce: the dimmed bubble icon was written
+     as 4.28 / 5.75 and is 4.88 / 6.38 — --text at 0.62 composited on
+     --bg-subtle is #6b6d71 in light and #979ba1 in dark. It passed either way,
+     which is exactly why it survived: a number in a comment fails silently.
+     Everything else in the table reproduced to the digit.
 
      The letter's own fill is --bg-raised, which is a 1.03-1.10:1 step from
      every surface it crosses: it is there to stop wires and the rail showing
@@ -908,9 +918,18 @@ main { flex: 1 0 auto; }
 
 .wgd-title      { font-size: 15px;   font-weight: 640; letter-spacing: 1.3px; fill: var(--wgd-title); }
 .wgd-reason     { font-size: 12px;   fill: var(--wgd-body); }
-.wgd-agent-name { font-size: 10.5px; font-weight: 620; letter-spacing: 1px; fill: var(--wgd-faint); }
 .wgd-kind       { font-size: 10.5px; letter-spacing: 0.2px; fill: var(--wgd-body); }
-.wgd-ex         { font-size: 12.5px; font-weight: 640; letter-spacing: 1.6px; fill: var(--wgd-title); }
+
+/* The part label: small, tracked, faint, and sitting outside the top of the
+   thing it names. ACADEMY AGENT is the idiom and EXCHANGE now shares its
+   declaration rather than approximating it, so the two cannot drift apart.
+
+   EXCHANGE was 12.5px/640 in --text — the entity titles' own colour and
+   weight — on a baseline above every one of theirs. The exchange is plumbing
+   and it was typeset as the most important thing in the drawing. A part label
+   is what it is: it names a component, it does not announce a place. */
+.wgd-agent-name,
+.wgd-ex         { font-size: 10.5px; font-weight: 620; letter-spacing: 1px; fill: var(--wgd-faint); }
 
 /* ---- Theirs: the dashed boundary ---------------------------------------- */
 
@@ -959,8 +978,26 @@ main { flex: 1 0 auto; }
 
 /* ---- The exchange -------------------------------------------------------- */
 
-.wgd-bus  { fill: var(--wgd-exchange); stroke: var(--wgd-edge); stroke-width: 1.5; }
-.wgd-rail { fill: none; stroke: var(--wgd-edge); stroke-width: 1.75; stroke-linecap: round; }
+/* A closed rounded rectangle with the inset fill, sized to its contents:
+   y 149-417 around two mailbox rows that span 169-397, so a 20-unit margin at
+   each end and a centre of 283, which is where the rows centre. It was
+   68-458, taller than any entity and centred 20 units above its own contents.
+
+   Everything else in this figure is a closed rounded form. This one stays one
+   — an open-ended version of it was tried and rejected.
+
+   THE RAIL OUTWEIGHS WHAT FEEDS IT. Wires, dashed boundaries and agent box
+   edges are all 1.75 and the rail used to be 1.75 as well, which left the one
+   part of the exchange that carries meaning weighing exactly what the eight
+   wires hanging off it weigh. At 3.5 it is twice the wire and reads as a
+   shared bus. Contrast is unaffected — same colour on the same fill, 3.04
+   light / 3.03 dark — and a heavier stroke can only help it.
+
+   The junction bead is the same colour again, deliberately: see the markup
+   for why it is not --accent. */
+.wgd-bus      { fill: var(--wgd-exchange); stroke: var(--wgd-edge); stroke-width: 1.5; }
+.wgd-rail     { fill: none; stroke: var(--wgd-edge); stroke-width: 3.5; stroke-linecap: round; }
+.wgd-junction { fill: var(--wgd-edge); }
 
 /* A curbside mailbox, in two strokes: the arched body and the flag. That is
    the whole glyph. It had a door seam and a knob as well, and at the size this
@@ -1446,7 +1483,7 @@ main { flex: 1 0 auto; }
    --border-strong at 0.6 opacity composites to about 1.9:1 and would drop a
    visible stroke below the 3:1 floor. Both ends clear it: --border-strong
    3.35 / 3.51 and --text 17.79 / 15.81. The icon's own dip is fine at
-   4.28 / 5.75, because it composites against the bubble fill rather than
+   4.88 / 6.38, because it composites against the bubble fill rather than
    disappearing into it.
 
    The in-focus ring is --text and deliberately NOT --accent. Accent means one

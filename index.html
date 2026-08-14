@@ -359,10 +359,57 @@ async def main() -> None:
           <!-- ================= The exchange: the spine ==================
                Drawn first so wires, mailboxes and agent boxes all layer over
                it. One mailbox per agent, and every hop is drawn entering one
-               mailbox and leaving another, because every hop really is. -->
-          <rect class="wgd-bus" x="390" y="68" width="140" height="390" rx="18"/>
-          <text class="wgd-ex"    x="460" y="100" text-anchor="middle">EXCHANGE</text>
-          <path class="wgd-rail" d="M460,150 V440"/>
+               mailbox and leaving another, because every hop really is.
+
+               IT IS PLUMBING AND IT MUST LOOK LIKE IT. The exchange carries
+               messages; it does not decide anything. Nothing in here may
+               read as intelligence — no glow, no pulse, no accent — because
+               the figure's whole argument is that the only thing that
+               reasons is an agent off to one side, in the cloud.
+
+               THE BOX IS SIZED TO WHAT IS IN IT. It used to run y 68-458
+               while the entities ran 86-440, so the plumbing was the tallest
+               object and the largest fill on the canvas; worse, it was
+               centred on y=263 when its own two mailbox rows centre on 283,
+               so it did not even line up with its own contents. It now runs
+               149-417. The mailbox rows span 169-397, which puts a uniform
+               20-unit margin at each end and the centre at exactly 283.
+               Height 268, down from 390; area 37,242 against 54,322.
+
+               It is still a closed rounded rectangle with the inset fill,
+               like everything else in this drawing. An earlier attempt made
+               it an open-ended duct running off the top and bottom of the
+               canvas and it was rejected: every other element here is a
+               closed rounded form and the exchange must not be the one that
+               is not.
+
+               ITS WIDTH IS UNCHANGED at 390-530 and has to stay that way.
+               The four wires from the entities cross this edge and stop at
+               the mailboxes (x=396 and x=524), so moving it sideways would
+               move where every one of them meets the box. Nothing in this
+               revision moves a wire endpoint, a letter route or a mailbox —
+               the shrink is vertical only, and no route, mailbox or raised
+               flag reaches above y=159.2 or below y=397.
+
+               THE LABEL SITS OUTSIDE THE BOX, in the part-label idiom: the
+               same small tracked --text-faint as ACADEMY AGENT, sharing its
+               rule in CSS section 9b. It used to be inside the box at --text
+               and weight 640 — the entity titles' own colour and weight — on
+               a baseline (100) above every one of theirs (114 for the top
+               pair, 320 for the bottom), so the plumbing outranked
+               everything it connects. It is centred on
+               x=460 rather than ranged left like the entity titles, because
+               every other part of the exchange is symmetric about that axis.
+
+               THE RAIL IS THE ONLY PART OF THIS THAT MEANS ANYTHING, so it
+               is drawn at 3.5 against the wires' 1.75 — it was 1.75 too,
+               identical to the wires and to the dashed boundaries, and a
+               shared bus that is exactly as heavy as the things hanging off
+               it does not read as one. It runs 169-397, level with the two
+               mailbox rows and symmetric about 283. -->
+          <rect class="wgd-bus" x="390" y="149" width="140" height="268" rx="18"/>
+          <text class="wgd-ex"  x="460" y="140" text-anchor="middle">EXCHANGE</text>
+          <path class="wgd-rail" d="M460,169 V397"/>
 
           <!-- ================= Tethers ===================================
                One per instrument bubble, anchored on the instrument's own
@@ -463,6 +510,37 @@ async def main() -> None:
             <path d="M430,386 H460"/>
             <path d="M490,386 H460"/>
           </g>
+
+          <!-- The two junctions. This is where the figure's centre actually
+               happens: at (460,180) and (460,386) the two inner wires meet
+               the rail, all four routes pass through, and every letter that
+               turns in this drawing turns on one of these two points. Until
+               now nothing was drawn at either of them, so a reader looking at
+               a still frame — which is what reduced motion and a screenshot
+               both give you — could see no reason why the middle was there.
+
+               Drawn as a solid bead in the edge colour, the neutral the rail
+               and the wires already use. NOT --accent: accent means "the
+               Academy component" and marks a live message, and a third
+               meaning at the centre would be the figure claiming the middle
+               is clever. Same reason there is no ring, halo or highlight
+               here — this is a bonded joint, nothing more.
+
+               r=6 against the rail's 3.5 stroke and the wires' 1.75, so it
+               reads as a node rather than as a thickening of the line and
+               takes in the wires' round caps cleanly. r=5 was tried first and
+               left the two caps showing as small ears on the bead; r=7 turned
+               it into a blob heavier than the mailboxes it serves. It is
+               larger than the accent ports (r=4.5) on purpose: a port is one
+               agent meeting one wire, this is where four routes converge.
+
+               Drawn AFTER .wgd-wires so the joint sits on top of the wire
+               ends rather than under them, and before the mailboxes and the
+               letters, which pass over it — the letter body is opaque, and a
+               letter briefly covering the junction it is turning on is the
+               correct order to see those two things in. -->
+          <circle class="wgd-junction" cx="460" cy="180" r="6"/>
+          <circle class="wgd-junction" cx="460" cy="386" r="6"/>
 
           <!-- ================= Mailboxes =================================
                One per agent, on the side of the rail its agent sits on. Each
