@@ -1,0 +1,51 @@
+{%- comment -%}
+  One row in the community-call archive. Reuses .post-row from the blog index
+  unchanged, so the four columns and the 700px collapse are defined in exactly
+  one place.
+
+  Rows link to the first entry in `links` — slides, a recording, notes. A call
+  that left nothing behind still gets a row, just an inert one: the archive is
+  a record of what was discussed, not only of what is downloadable.
+
+  Usage: {% include talk-row.html call=some_call %}
+{%- endcomment -%}
+{%- assign call = include.call -%}
+{%- assign link = call.links | first -%}
+{%- assign is_offsite = false -%}
+{%- assign is_download = false -%}
+{%- if link -%}
+  {%- if link.url contains '://' -%}
+    {%- assign target = link.url -%}
+    {%- assign is_offsite = true -%}
+  {%- else -%}
+    {%- assign target = link.url | relative_url -%}
+  {%- endif -%}
+  {%- if link.url contains '.pdf' -%}
+    {%- assign is_download = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+<div class="post-row{% unless link %} post-row--static{% endunless %}">
+  <time class="post-row__date" datetime="{{ call.date | date_to_xmlschema }}">{{ call.date | date: "%b %-d" }}</time>
+  <span class="post-row__kind">
+    {%- if link %}<span class="tag">{{ link.title }}</span>{% endif -%}
+  </span>
+  <span class="post-row__body">
+    <span class="post-row__title">
+      {%- if link -%}
+      <a class="stretched" href="{{ target }}"{% if is_offsite %} rel="noopener"{% endif %}>{{ call.title }}
+        {%- if is_download %}<span class="visually-hidden"> (PDF)</span>
+        {%- elsif is_offsite %}<span class="visually-hidden"> (external link)</span>{% endif -%}
+      </a>
+      {%- else -%}
+      {{ call.title }}
+      {%- endif -%}
+    </span>
+    <span class="post-row__summary">
+      {{- call.speaker }}{% if call.affiliation %} &middot; {{ call.affiliation }}{% endif -%}
+    </span>
+  </span>
+  <span class="post-row__arrow" aria-hidden="true">
+    {%- if is_download %}&darr;{% elsif is_offsite %}&#8599;{% elsif link %}&rarr;{% endif -%}
+  </span>
+</div>

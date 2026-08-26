@@ -2645,7 +2645,15 @@ tbody tr:last-child td { border-bottom: 0; }
 /* Navigation collapse. Gated on `.js` (set by the inline head script) so that
    with scripting blocked the menu stays in flow and reachable — hiding it in
    CSS that only JS can undo reintroduced the very bug this replaced. */
-@media (max-width: 760px) {
+/* Was 760px, which fitted five nav items and the three icon buttons with
+   nothing to spare. "Community calls" makes six, and at 761px that pushed
+   "Documentation" and all three icons off the right edge — measured against
+   the live five-item nav at the same width, which still fits. Six items need
+   ~940px: at 900px the theme toggle is already clipped, at 940px it clears.
+   The nav is not the place to claw the space back — gaps are already 0.25rem
+   and item padding 0.7rem. A half-screen window on a 1920 display is 960px,
+   so it stays above this and keeps the inline nav. */
+@media (max-width: 940px) {
   .site-header { position: sticky; }
   .site-nav { position: relative; flex-wrap: wrap; }
 
@@ -2951,6 +2959,8 @@ tbody tr:last-child td { border-bottom: 0; }
 .measured a,
 .dl-list dd a,
 .post-list__feed a,
+.talk__speaker a,
+.talk__join p a,
 .footer-bottom a { text-decoration: underline; text-underline-offset: 0.15em; }
 
 /* Restyled after the footer column titles moved from <h2> to <p>. */
@@ -3167,4 +3177,179 @@ tbody tr:last-child td { border-bottom: 0; }
 @media (max-width: 560px) {
   .carousel__slide { flex-basis: 88%; }
   .carousel__media img { height: 180px; }
+}
+
+/* ==========================================================================
+   22. Community calls
+   The next call is one block, not a card grid: there is only ever one of it,
+   and its abstract needs a prose measure rather than a card's width. Past
+   calls reuse .post-row from the blog index — see _includes/talk-row.html.
+
+   Contrast, computed from the tokens in both themes (light / dark). The block
+   sits on --bg-raised, not --bg, so every pairing is measured against that.
+
+     "Next call" pill, accent on accent-subtle .......  6.41 / 6.37
+     date, time, place, and the ABSTRACT/SPEAKER
+       labels, text-faint on bg-raised ...............  4.94 / 4.76
+     title and speaker, text on bg-raised ............ 17.32 / 14.41
+     abstract, bio, affiliation,
+       text-muted on bg-raised ....................... 6.01 / 6.79
+     archive tag, text-muted on bg-inset .............  5.60 / 6.42
+
+   Two edges come in under 3:1 — the pill's accent-border (1.50 / 1.53) and the
+   block's own --border (1.25 / 1.35). Both are exempt from 1.4.11: neither is
+   a control, and neither is the only thing carrying its meaning — the pill is
+   identified by its label, the block by its fill and shadow. They are also the
+   same tokens every card, .pub and .featured-post on this site already uses,
+   so changing them here alone would make this page the odd one out.
+   -------------------------------------------------------------------------- */
+
+.talk {
+  /* Full container width. An earlier revision capped this at 820px so the
+     abstract would not trail off into empty card, but that just moved the hole
+     outside the block and left the right third of the page empty. The width is
+     earned instead by .talk__body below. */
+  padding: 2.25rem 2.5rem 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+/* No hover treatment: unlike .featured-post this block is not a link. The
+   things to click inside it are the speaker's page and the Slack button. */
+
+.talk__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+
+/* Accent-tinted rather than the neutral .tag, because this is the one status
+   on the page. Deliberately not .tag--stage: that belongs to the case-study
+   carousel and carries a margin-left that fights this flex row's gap. */
+.tag--next {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.talk__title {
+  max-width: 30ch;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.talk__speaker {
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.talk__affiliation {
+  color: var(--text-muted);
+  font-weight: 450;
+}
+
+.talk__affiliation::before { content: " \00b7 "; }
+
+/* auto-fit, not two fixed tracks: with both an abstract and a bio this gives
+   two columns of a comfortable measure, and with only one of them the empty
+   track collapses so the single section runs the full width instead of sitting
+   beside a hole. min() lets a column shrink below its 24rem floor rather than
+   overflow when the card itself is narrow. */
+.talk__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  align-items: start;
+  gap: 1.75rem 3rem;
+  margin-top: 1.75rem;
+}
+
+.talk__section { min-width: 0; }
+
+.talk__section p {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* The label idiom used elsewhere on the site for small caps over a block. */
+.talk__label {
+  margin-bottom: 0.4rem;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.talk__join {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Capped so the sentence keeps a readable measure at full container width
+   instead of stretching to one very long line; space-between then holds the
+   button at the far edge rather than leaving it adrift mid-row. */
+.talk__join p {
+  flex: 1 1 22rem;
+  max-width: 56ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* The empty state carries a heading, one line and a button. In the bordered
+   card that reads as a stretched box with a metre of rule under two lines of
+   text, so it drops the frame and stands as plain copy instead. */
+.talk--empty {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.talk--empty .talk__speaker {
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 450;
+}
+
+.talk--empty .talk__join {
+  margin-top: 1.5rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* An archive row with nothing to link to is inert, so it must not offer the
+   hover affordance the linked rows do. Same specificity as .post-row:hover,
+   and later in the file, so this wins. */
+.post-row--static:hover { background: transparent; }
+
+/* The blog index opens its list with a year, so .post-list__year:not(:first-child)
+   pushes every later one down by 2.5rem. Here a "Past calls" heading comes
+   first, which makes the opening year a later child and opens a gap between
+   the two. Close it; the heading already carries the spacing. */
+.post-list > .year-heading + .post-list__year { margin-top: 0; }
+
+@media (max-width: 700px) {
+  .talk { padding: 1.75rem 1.5rem 1.5rem; }
+  .talk__title { max-width: none; }
 }

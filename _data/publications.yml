@@ -24,6 +24,31 @@
     - title: DOI
       url: https://doi.ieeecomputersociety.org/10.1109/MC.2025.3575029
 
+# Within a year, entries render in the order they appear here. This one is
+# posted 2026-08-24, after the IPDPS paper below, so it leads 2026.
+#
+# Source: the Crossref record for 10.2139/ssrn.7344668, not the SSRN page —
+# SSRN itself sits behind a bot challenge. Title and the 23-author list are
+# transcribed from that record verbatim, including "Gregory Pauloski" rather
+# than the "J. Gregory Pauloski" used on the other two entries; that is how
+# this paper registered it. Crossref gives the posted year as 2026 only, with
+# no month, so there is no more precise date to record here.
+- title: "Patterns and Experiences from Deploying Agents in Scientific Applications"
+  authors: >-
+    Alok Kamatar, Augustus William McSweeney Ellerm, Suman Raj, Ryan Chard,
+    Yadu Babuji, Michael Tynes, Matt Baughman, Logan Ward, Gregory Pauloski,
+    Rajiv Venkatesh, Alexander Brace, Matt Sinclair, Archit Vasan,
+    Arvind Ramanathan, Renan Souza, Daniel Rosendo, Fred Suter,
+    Rafael Ferreira Da Silva, Christopher Harrop, Amal Gueroudji,
+    Chandrachur Bhattacharya, Ian Foster, and Kyle Chard
+  venue: "Preprint (SSRN)"
+  year: 2026
+  links:
+    - title: SSRN
+      url: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7344668
+    - title: DOI
+      url: https://doi.org/10.2139/ssrn.7344668
+
 - title: "Empowering Scientific Workflows with Federated Agents"
   # The paper to cite for Academy itself. Selected by `cite`, not by position.
   cite: true

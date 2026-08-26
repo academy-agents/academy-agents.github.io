@@ -1,0 +1,146 @@
+---
+layout: page
+permalink: /community-calls/
+title: Community calls
+description: >-
+  What is coming up at the next Academy community call, and an archive of
+  previous sessions.
+lead: >-
+  A fortnightly call where Academy contributors present work in progress.
+  Anyone in the Academy Slack workspace is welcome to join.
+wide: true
+---
+
+{%- comment -%}
+  The next call and the archive are split at BUILD TIME, on whole days, so a
+  call reads as upcoming for the whole of its own day rather than flipping to
+  "past" at midnight UTC while people are still dialling in. `site.time` is the
+  build clock, so this is only as fresh as the last deploy — see the note at
+  the top of _data/community_calls.yml.
+
+  Past calls reuse .post-row from the blog index rather than getting their own
+  grid: same four columns, same responsive collapse, no new CSS. The narrow
+  second column carries whatever material survived the call (slides, notes),
+  which is the thing an archive reader is actually looking for.
+{%- endcomment -%}
+
+{%- assign today = site.time | date: '%Y%m%d' | plus: 0 -%}
+{%- assign calls = site.data.community_calls | sort: 'date' -%}
+{%- assign total = calls | size -%}
+
+{%- comment -%} Index of the earliest call not yet past; `total` if there is none. {%- endcomment -%}
+{%- assign next_index = total -%}
+{%- for call in calls -%}
+  {%- assign day = call.date | date: '%Y%m%d' | plus: 0 -%}
+  {%- if day >= today and next_index == total -%}
+    {%- assign next_index = forloop.index0 -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if next_index < total -%}
+{%- assign next_call = calls | slice: next_index, 1 | first -%}
+
+<article class="talk">
+  <div class="talk__meta">
+    <span class="tag tag--next">Next call</span>
+    <time datetime="{{ next_call.date | date_to_xmlschema }}">{{ next_call.date | date: "%A, %B %-d, %Y" }}</time>
+    {%- if next_call.time %}
+    <span aria-hidden="true">&middot;</span>
+    <span>{{ next_call.time }}</span>
+    {%- endif %}
+    {%- if next_call.place %}
+    <span aria-hidden="true">&middot;</span>
+    <span>{{ next_call.place }}</span>
+    {%- endif %}
+  </div>
+
+  <h2 class="talk__title">{{ next_call.title }}</h2>
+
+  <p class="talk__speaker">
+    {%- if next_call.speaker_url %}<a href="{{ next_call.speaker_url }}" rel="noopener">{{ next_call.speaker }}</a>
+    {%- else %}{{ next_call.speaker }}{% endif -%}
+    {%- if next_call.affiliation %}<span class="talk__affiliation">{{ next_call.affiliation }}</span>{% endif -%}
+  </p>
+
+  {%- comment -%}
+    Abstract and bio sit side by side so the block earns its full width. The
+    grid is auto-fit, so a call with only an abstract gets one full-width
+    column rather than a column and a hole — see the CSS.
+  {%- endcomment -%}
+  {%- if next_call.abstract or next_call.bio %}
+  <div class="talk__body">
+    {%- if next_call.abstract %}
+    <div class="talk__section">
+      <h3 class="talk__label">Abstract</h3>
+      <p>{{ next_call.abstract }}</p>
+    </div>
+    {%- endif %}
+
+    {%- if next_call.bio %}
+    <div class="talk__section">
+      <h3 class="talk__label">About the speaker</h3>
+      <p>{{ next_call.bio }}</p>
+    </div>
+    {%- endif %}
+  </div>
+  {%- endif %}
+
+  <div class="talk__join">
+    <p>
+      Zoom invitations are shared in the Academy Slack workspace. Join it once
+      and the link for every call arrives there.
+    </p>
+    <a class="button button--primary" href="{{ site.links.slack }}" rel="noopener">Join the Slack workspace</a>
+  </div>
+</article>
+
+{%- assign later_start = next_index | plus: 1 -%}
+{%- assign later = calls | slice: later_start, total -%}
+{%- if later.size > 0 %}
+<div class="post-list">
+  <h2 class="post-list__year">Also scheduled</h2>
+  {%- for call in later %}
+  {%- include talk-row.html call=call %}
+  {%- endfor %}
+</div>
+{%- endif %}
+
+{%- else %}
+
+<div class="talk talk--empty">
+  <h2 class="talk__title">No call is scheduled yet</h2>
+  <p class="talk__speaker">The date and topic for the next call are announced in Slack.</p>
+  <div class="talk__join">
+    <a class="button button--primary" href="{{ site.links.slack }}" rel="noopener">Join the Slack workspace</a>
+  </div>
+</div>
+
+{%- endif -%}
+
+{%- assign past = calls | slice: 0, next_index | reverse -%}
+{%- if past.size > 0 %}
+<div class="post-list">
+  <h2 class="year-heading">Past calls</h2>
+  {%- assign years = past | group_by_exp: "c", "c.date | date: '%Y'" %}
+  {%- for year in years %}
+  <h3 class="post-list__year">{{ year.name }}</h3>
+  {%- for call in year.items %}
+  {%- include talk-row.html call=call %}
+  {%- endfor %}
+  {%- endfor %}
+</div>
+{%- endif %}
+
+<div class="content-block">
+  <h2 class="year-heading">Give a talk</h2>
+  <p class="measured">
+    The call exists so that contributors can show work in progress — a design
+    you are unsure about counts, and so does a half-finished branch. If you have
+    something to talk about, say so in
+    <a href="{{ site.links.slack }}" rel="noopener">Slack</a>.
+  </p>
+  <p class="measured">
+    Slides and write-ups from past calls also appear on the
+    <a href="{{ '/blog/' | relative_url }}">news and blog</a> page.
+  </p>
+</div>

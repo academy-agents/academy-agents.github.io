@@ -14,6 +14,12 @@ main:
   - title: Team
     url: /team/
     match: /team/
+  # Sits next to "News & blog" because the two are the community-facing pair,
+  # and ahead of it because a dated announcement people need *before* the date
+  # is more time-critical than an archive.
+  - title: Community calls
+    url: /community-calls/
+    match: /community-calls/
   - title: News & blog
     url: /blog/
     match: /blog/
@@ -43,6 +49,8 @@ footer:
     items:
       - title: News & blog
         url: /blog/
+      - title: Community calls
+        url: /community-calls/
       - title: Slack
         url: https://join.slack.com/t/academy-agents/shared_invite/zt-3h6n6tqvn-xkgCLIR2VQBcTU~WJB4IXA
       - title: Tutorial repository

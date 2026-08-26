@@ -1,0 +1,83 @@
+# Academy community calls, listed at /community-calls/.
+#
+# The series is described on the home page as "a fortnightly call where
+# contributors present work in progress". Note the name: the *annual* meeting
+# shared with Parsl and Globus Compute is the APeX Summit and is already called
+# the "community meeting" on this site, so this recurring virtual one stays
+# "community call" everywhere.
+#
+# HOW THE PAGE SPLITS THIS LIST
+#   The next call and the archive are separated at BUILD TIME by comparing each
+#   entry's `date` with the build date, whole days only, so a call still reads
+#   as upcoming for the whole of its own day. The site only rebuilds when
+#   something is pushed, so a call that has happened keeps showing as "next"
+#   until the next deploy. Adding the following call fixes that as a side
+#   effect, which is the usual case — but if there is a gap, push anyway.
+#
+# FIELDS
+#   title       required, verbatim from the speaker
+#   speaker     required
+#   affiliation optional; omit rather than guess
+#   speaker_url optional, a personal or GitHub page
+#   date        required, YYYY-MM-DD, drives both sorting and the split above
+#   time        optional, as announced — see the timezone note below
+#   place       optional, e.g. "Virtual"
+#   abstract    optional, verbatim
+#   bio         optional, verbatim
+#   links       optional list of {title, url}: slides, recording, notes
+#
+# TIMEZONE: `time` is printed exactly as given. Nothing here converts it, so
+# the string has to carry its own zone or readers outside the US have to guess.
+#
+# The series runs on CHICAGO time, and the call is announced in it, so lead
+# with that and put the UTC equivalent in brackets for everyone else:
+#
+#     time: "1:00 – 2:00 PM CDT (18:00 UTC)"
+#
+# Both halves change with US daylight saving, so recompute them per call rather
+# than copying the line forward. In 2026 DST runs Mar 8 – Nov 1:
+#
+#     inside  that window   1:00 PM Chicago = CDT = 18:00 UTC
+#     outside that window   1:00 PM Chicago = CST = 19:00 UTC
+#
+# Checked with `TZ=America/Chicago`, not by hand. Writing plain "CT" instead
+# also works and never goes stale, but then the bracketed UTC has to go too —
+# "CT (18:00 UTC)" is only right for half the year.
+
+- title: Automatic cross version compatibility testing
+  speaker: Ben Clifford
+  # No affiliation: his team.yml entry has none either, and the bio below puts
+  # him "in and around Globus Labs" deliberately loosely. Do not tighten it.
+  speaker_url: https://github.com/benclifford
+  date: 2026-08-26
+  time: "1:00 – 2:00 PM CDT (18:00 UTC)"
+  place: Virtual
+  abstract: >-
+    As Academy moves towards supporting more persistent agents shared among
+    many users, compatibility between different versions of Academy is going to
+    become more important. Ben will talk about some recent work he's done on
+    automated testing to help stop accidental breakage and to help more clearly
+    define expectations.
+  bio: >-
+    Ben Clifford is a long time contributor and has been programming
+    distributed systems in and around Globus Labs since the late 20th century.
+
+# --- Archive ---------------------------------------------------------------
+# Only calls we can actually source belong here.
+#
+# Deliberately absent: the February 2026 observability deck
+# (blog/academy-observability-2026-02.pdf) and the May 2026 observability post.
+# The home page implies both were community-call sessions, but neither the post
+# nor the file says so. Add them with a date once someone confirms it.
+
+- title: "Student presentation: Academy + Diaspora integration"
+  # First name only — that is all the blog post records. Add the surname rather
+  # than inventing one.
+  speaker: Gulesh
+  date: 2026-06-17
+  place: Virtual
+  abstract: >-
+    Integrating Diaspora into Academy's logging system.
+  links:
+    - title: Slides
+      url: /blog/2026-06-Academy_diaspora_integration.pdf

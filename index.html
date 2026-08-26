@@ -1265,15 +1265,19 @@ async def main() -> None:
         <span class="card__more" aria-hidden="true">Join Slack &rarr;</span>
       </article>
 
-      <article class="card">
-        <h3>Community call</h3>
+      <article class="card card--link">
+        <h3><a class="stretched" href="{{ '/community-calls/' | relative_url }}">Community call</a></h3>
+        {%- comment -%}
+          Kept under the four-line clamp, and pointed forward rather than back:
+          the card's job is now to route people to the calls page, which is
+          where the next topic and the Zoom instructions live.
+        {%- endcomment -%}
         <p>
-          A fortnightly call where contributors present work in progress.
-          Recent sessions covered
-          <a href="{{ '/blog/2026-05-logging.html' | relative_url }}">observability</a>
-          and a student project integrating Diaspora into the logging system.
-          Planning also happens in the open, in issues and on the tracker.
+          A fortnightly call where contributors present work in progress. The
+          next topic, its abstract, and how to get the Zoom link are all on the
+          calls page.
         </p>
+        <span class="card__more" aria-hidden="true">Next call &rarr;</span>
       </article>
 
       <article class="card card--link">
