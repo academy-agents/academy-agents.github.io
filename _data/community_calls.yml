@@ -44,21 +44,10 @@
 # also works and never goes stale, but then the bracketed UTC has to go too —
 # "CT (18:00 UTC)" is only right for half the year.
 
-- title: Using formal methods to look at task-losing race-conditions in the
-    parsl scaling mechanism
-  # Offered in Slack on 2026-09-01, as prose rather than as a formal title, so
-  # it arrived lower-case. Capitalised to match the other entries.
-  speaker: Ben Clifford
-  # Same speaker as the call below; speaker_url copied from that entry, and
-  # affiliation left off there too. Do not add one.
-  speaker_url: https://github.com/benclifford
-  # Fortnightly from the 2026-08-26 call. Inside the 2026 DST window
-  # (Mar 8 – Nov 1), so 1:00 PM Chicago is CDT and 18:00 UTC.
-  date: 2026-09-09
-  time: "1:00 – 2:00 PM CDT (18:00 UTC)"
-  place: Virtual
-  # No abstract or bio: only a title was offered. Both fields are optional and
-  # the page drops their columns cleanly. Add the abstract when it arrives.
+# Deliberately absent: Ben Clifford's formal-methods talk on task-losing race
+# conditions in the parsl scaling mechanism. It was offered on 2026-09-01 and
+# briefly listed here for 2026-09-09, but it belongs to a different event, not
+# this series. Do not re-add it from the Slack thread.
 
 - title: Automatic cross version compatibility testing
   speaker: Ben Clifford
