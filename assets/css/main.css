@@ -3239,7 +3239,10 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
 .talk__title {
-  max-width: 30ch;
+  /* Wide enough that a long title uses the block rather than stacking in a
+     narrow column beside empty card — the abstract-less calls have no body
+     grid underneath to carry the width. Still a measure, not a full line. */
+  max-width: 42ch;
   margin-bottom: 0.5rem;
   font-size: clamp(1.5rem, 3vw, 2rem);
   letter-spacing: -0.025em;

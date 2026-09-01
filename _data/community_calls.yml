@@ -44,6 +44,22 @@
 # also works and never goes stale, but then the bracketed UTC has to go too —
 # "CT (18:00 UTC)" is only right for half the year.
 
+- title: Using formal methods to look at task-losing race-conditions in the
+    parsl scaling mechanism
+  # Offered in Slack on 2026-09-01, as prose rather than as a formal title, so
+  # it arrived lower-case. Capitalised to match the other entries.
+  speaker: Ben Clifford
+  # Same speaker as the call below; speaker_url copied from that entry, and
+  # affiliation left off there too. Do not add one.
+  speaker_url: https://github.com/benclifford
+  # Fortnightly from the 2026-08-26 call. Inside the 2026 DST window
+  # (Mar 8 – Nov 1), so 1:00 PM Chicago is CDT and 18:00 UTC.
+  date: 2026-09-09
+  time: "1:00 – 2:00 PM CDT (18:00 UTC)"
+  place: Virtual
+  # No abstract or bio: only a title was offered. Both fields are optional and
+  # the page drops their columns cleanly. Add the abstract when it arrives.
+
 - title: Automatic cross version compatibility testing
   speaker: Ben Clifford
   # No affiliation: his team.yml entry has none either, and the bio below puts
@@ -61,6 +77,13 @@
   bio: >-
     Ben Clifford is a long time contributor and has been programming
     distributed systems in and around Globus Labs since the late 20th century.
+  # Linked as /view, not the /edit?usp=sharing URL it was shared as: /edit
+  # drops a public visitor into edit mode if the deck's sharing is ever loosened
+  # to "anyone with the link can edit". /view never grants more than the
+  # sharing settings allow. Checked 2026-09-01: readable while signed out.
+  links:
+    - title: Slides
+      url: https://docs.google.com/presentation/d/1PfrMDR0tXsM4NWYM2N4jfqvWChIFbNa1ErhutAsnuZ0/view
 
 # --- Archive ---------------------------------------------------------------
 # Only calls we can actually source belong here.
