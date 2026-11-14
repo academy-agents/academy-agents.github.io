@@ -44,6 +44,10 @@ The code for the tutorial is available in the
 [GitHub repository]({{ site.links.tutorial_repo }}). Clone the repository and
 check out the `sc26` branch for the environment specific to this tutorial.
 
+### Slides
+
+[Slides for the Academy Tutorial SC 2026]({{ '/files/2026-11-15-academy-tutorial-sc26.pdf' | relative_url }})
+
 ## Participant requirements
 
 Participants need intermediate knowledge of coding in Python, and a laptop where
